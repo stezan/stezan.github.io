@@ -1,8 +1,8 @@
 # Dependencies
-node_modules/
-package-lock.json
+blog/node_modules/
+blog/package-lock.json
 
-# Generated files
+# Articles Markdown
 blog/articles/
 
 # OS generated files
