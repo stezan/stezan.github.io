@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}} - Stefano Zanella's Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{excerpt}}">
+    <meta name="author" content="{{author}}">
+    <meta name="date" content="{{date}}">
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+    <header class="toolbar">
+        <div class="toolbar-content">
+            <a href="../../index.html" class="logo-link">
+                <img src="../../images/logo.jpeg" alt="Logo" class="logo">
+                <span class="name">Stefano Zanella</span>
+            </a>
+        </div>
+    </header>
+    <main>
+        <article>
+            <header>
+                <h1>{{title}}</h1>
+                {{#excerpt}}<p class="excerpt">{{excerpt}}</p>{{/excerpt}}
+                {{#hasMeta}}
+                <div class="article-meta">
+                    {{#date}}<time>{{date}}</time>{{/date}}
+                    {{#readTime}}<span>{{readTime}}</span>{{/readTime}}
+                    {{#author}}<span>By {{author}}</span>{{/author}}
+                </div>
+                {{/hasMeta}}
+            </header>
+            {{content}}
+        </article>
+    </main>
+</body>
+</html> 

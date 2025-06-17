@@ -8,6 +8,10 @@ if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
 }
 
+// Load templates
+const articleTemplate = fs.readFileSync(path.join(__dirname, 'templates', 'article.html'), 'utf-8');
+const blogIndexTemplate = fs.readFileSync(path.join(__dirname, 'templates', 'blog-index.html'), 'utf-8');
+
 // Function to parse frontmatter
 function parseFrontmatter(content) {
     const frontmatterRegex = /^---\n([\s\S]*?)\n---/;
@@ -33,6 +37,35 @@ function parseFrontmatter(content) {
     };
 }
 
+// Function to replace template variables and handle array iteration
+function replaceTemplate(template, data) {
+    let result = template;
+
+    // Step 1: Handle conditional sections and array iteration first: {{#key}}content{{/key}}
+    // This ensures that nested content within loops/conditionals is processed with its specific context.
+    result = result.replace(/\{\{#([^}]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, (match, key, content) => {
+        if (Array.isArray(data[key])) {
+            // If the key refers to an array, iterate over it
+            return data[key].map(item => {
+                // Recursively call replaceTemplate for each item in the array
+                // The item itself acts as the data context for the inner content
+                return replaceTemplate(content, item);
+            }).join('');
+        } else {
+            // Otherwise, it's a simple boolean condition
+            return data[key] ? content : '';
+        }
+    });
+
+    // Step 2: Handle simple variable replacement: {{variable}}
+    // This happens after all structural replacements (loops/conditionals) are done.
+    result = result.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
+        return data[key] || '';
+    });
+
+    return result;
+}
+
 // Read all markdown files
 const articlesDir = path.join(__dirname, 'articles');
 const articles = fs.readdirSync(articlesDir)
@@ -45,66 +78,40 @@ articles.forEach(articleFile => {
     const metadata = parsed?.metadata || {};
     const htmlContent = marked(parsed?.content || content);
     
-    // Create HTML file
-    const html = `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>${metadata.title || articleFile.replace('.md', '')} - Stefano Zanella's Blog</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="${metadata.excerpt || ''}">
-    <meta name="author" content="${metadata.author || 'Stefano Zanella'}">
-    <meta name="date" content="${metadata.date || ''}">
-</head>
-<body>
-    <article>
-        <header>
-            <h1>${metadata.title || articleFile.replace('.md', '')}</h1>
-            ${metadata.excerpt ? `<p class="excerpt">${metadata.excerpt}</p>` : ''}
-            ${metadata.date || metadata.readTime || metadata.author ? `
-            <div class="article-meta">
-                ${metadata.date ? `<time>${metadata.date}</time>` : ''}
-                ${metadata.readTime ? `<span>${metadata.readTime}</span>` : ''}
-                ${metadata.author ? `<span>By ${metadata.author}</span>` : ''}
-            </div>` : ''}
-        </header>
-        ${htmlContent}
-    </article>
-    <a href="/blog">Back to Blog</a>
-</body>
-</html>`;
+    // Prepare data for template
+    const templateData = {
+        title: metadata.title || articleFile.replace('.md', ''),
+        excerpt: metadata.excerpt || '',
+        author: metadata.author || 'Stefano Zanella',
+        date: metadata.date || '',
+        readTime: metadata.readTime || '',
+        content: htmlContent,
+        hasMeta: metadata.date || metadata.readTime || metadata.author ? true : false
+    };
+
+    // Generate HTML using template
+    const html = replaceTemplate(articleTemplate, templateData);
 
     // Generate URL-friendly filename
     const urlFriendlyTitle = articleFile.replace('.md', '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
     fs.writeFileSync(path.join(outputDir, `${urlFriendlyTitle}.html`), html);
 });
 
-// Generate index page
-const blogIndex = `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Blog - Stefano Zanella</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-    <h1>Blog</h1>
-    <p>This is the blog of Stefano Zanella, an explorer of the world and of the wild web</p>
-    <p>Here I write about my experiences and my thoughts</p>
-    <ul>
-        ${articles.map(articleFile => {
-            const content = fs.readFileSync(path.join(articlesDir, articleFile), 'utf-8');
-            const parsed = parseFrontmatter(content);
-            const metadata = parsed?.metadata || {};
-            const urlFriendlyTitle = articleFile.replace('.md', '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            return `<li>
-                <a href="generated/${urlFriendlyTitle}.html">${metadata.title || articleFile.replace('.md', '')}</a>
-                ${metadata.date ? `<small>${metadata.date} · ${metadata.readTime || ''}</small>` : ''}
-            </li>`;
-        }).join('\n')}
-    </ul>
-    <a href="/">Back to Home</a>
-</body>
-</html>`;
+// Generate blog index
+const articlesList = articles.map(articleFile => {
+    const content = fs.readFileSync(path.join(articlesDir, articleFile), 'utf-8');
+    const parsed = parseFrontmatter(content);
+    const metadata = parsed?.metadata || {};
+    const urlFriendlyTitle = articleFile.replace('.md', '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    
+    return {
+        title: metadata.title || articleFile.replace('.md', ''),
+        urlFriendlyTitle,
+        date: metadata.date || '',
+        readTime: metadata.readTime || ''
+    };
+});
 
-fs.writeFileSync('blog.html', blogIndex); 
+// Generate blog index HTML
+const blogIndexHtml = replaceTemplate(blogIndexTemplate, { articles: articlesList });
+fs.writeFileSync('blog.html', blogIndexHtml); 
