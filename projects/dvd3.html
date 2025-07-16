@@ -387,8 +387,11 @@
             const apiUrl = "https://script.google.com/macros/s/AKfycbyUfSL4YW1cOsLsnPyCTIM-8oMChcM-I9-ksBzBmLxZ-H40SSCMdbOrAjr9Q7vZkdK0ng/exec";
 
             fetch(apiUrl, {
+              redirect: "follow",
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "text/plain;charset=utf-8",
+            },
               body: JSON.stringify({
                 finishedProducts: completedCount,
                 defects: defectsCount,
