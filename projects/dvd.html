@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Operazione Kaizen</title>
+    <style>
+        :root {
+            --primary-bg: #1a202c;
+            --secondary-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --accent-color: #4299e1;
+            --success-color: #48bb78;
+            --error-color: #f56565;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            display: flex;
+            align-items: flex-start; /* CHANGED: Was 'center' */
+            justify-content: center;
+            min-height: 100%; /* CHANGED: Allow scrolling */
+            padding-top: 20px; /* ADDED: Give some space at the top */
+            padding-bottom: 20px; /* ADDED: Give some space at the bottom */
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            max-width: 90%;
+            line-height: 1.6;
+        }
+
+        ul {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 25px;
+            max-width: 90%;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+        }
+
+        button {
+            font-family: 'Roboto Mono', monospace;
+            padding: 15px 30px;
+            border: none;
+            background-color: var(--accent-color);
+            color: #fff;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #3182ce;
+        }
+
+        #game-screen {
+            justify-content: flex-start;
+        }
+        
+        .game-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5px;
+            margin-bottom: 10px;
+            background: var(--secondary-bg);
+            border-radius: 5px;
+        }
+
+        #timer {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        #required-sequence-container {
+            font-size: 0.8em;
+            text-align: left;
+        }
+        
+        #required-sequence-container h3 {
+             margin-bottom: 5px;
+        }
+
+        canvas {
+            background-color: var(--secondary-bg);
+            border-radius: 5px;
+            width: 100%;
+            flex-shrink: 0; /* ADDED: Prevents canvas from shrinking */
+        }
+
+        #game-footer {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        #game-footer button {
+            width: 100%;
+        }
+
+        #result-screen h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .result-stats {
+            background: var(--secondary-bg);
+            padding: 20px;
+            border-radius: 8px;
+            width: 95%;
+            margin-bottom: 20px;
+        }
+
+        .result-stats p {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .final-prize {
+            color: var(--success-color);
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div id="welcome-screen" class="screen active">
+            <h1>Operazione Kaizen</h1>
+            <h2>La tua prima sfida da Ingegnere</h2>
+            <p>
+                Ciao Ingegnere,<br>Congratulazioni per la tua laurea! La teoria è finita, ora inizia la pratica.
+                La tua missione è trasformare il caos in efficienza riorganizzando una linea di produzione.
+            </p>
+            <ul>
+                <li>✔️ La sequenza deve essere perfetta.</li>
+                <li>📏 Meno strada percorre il prodotto, più guadagni.</li>
+                <li>⏱️ Il tempo è un fattore.</li>
+            </ul>
+            <p><strong>Il tuo compenso:</strong> parti da €100. Ottimizza al meglio per non perderli!</p>
+            <button id="start-button">Accetto la Sfida!</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <div id="required-sequence-container">
+                    <h3>Sequenza:</h3>
+                    <div id="sequence-list"></div>
+                </div>
+                <div id="timer">Tempo: 00:00</div>
+            </div>
+            <canvas id="game-canvas"></canvas>
+            <div id="game-footer">
+                <button id="finish-button">AVVIA PRODUZIONE</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2>Risultato Finale</h2>
+            <div class="result-stats">
+                <p><span>Sequenza Processo:</span> <strong id="result-sequence"></strong></p>
+                <p><span>Distanza Percorsa:</span> <strong id="result-distance"></strong></p>
+                <p><span>Tempo Impiegato:</span> <strong id="result-time"></strong></p>
+                <hr style="border-color: #4a5568; margin: 15px 0;">
+                <p><span>Budget Iniziale:</span> <span>€100.00</span></p>
+                <p><span>Penalità Distanza:</span> <span id="penalty-distance"></span></p>
+                <p><span>Penalità Tempo:</span> <span id="penalty-time"></span></p>
+                <p><span>PREMIO FINALE:</span> <span id="final-prize" class="final-prize"></span></p>
+            </div>
+            <p id="final-message"></p>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- CONFIG & STATE ---
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const screens = {
+        welcome: document.getElementById('welcome-screen'),
+        game: document.getElementById('game-screen'),
+        result: document.getElementById('result-screen'),
+    };
+
+    const startBtn = document.getElementById('start-button');
+    const finishBtn = document.getElementById('finish-button');
+
+    const NUM_COLS = 6;
+    const NUM_ROWS = 9;
+    const DOCK_ROWS = 2; // CHANGED: Adjusted to reflect the number of rows needed for machines
+    let GRID_SIZE, DOCK_HEIGHT;
+
+    const REQUIRED_SEQUENCE = ['taglio', 'saldatura', 'verniciatura', 'controllo', 'imballaggio'];
+    const MACHINES_CONFIG = [
+        { id: 'taglio', name: 'Taglio', color: '#e53e3e' },
+        { id: 'saldatura', name: 'Saldatura', color: '#dd6b20' },
+        { id: 'verniciatura', name: 'Verniciatura', color: '#38a169' },
+        { id: 'controllo', name: 'C. Qualità', color: '#3182ce' },
+        { id: 'imballaggio', name: 'Imball.', color: '#805ad5' },
+    ];
+
+    let machines = [];
+    let ingresso, uscita;
+    let draggedMachine = null;
+    let dragOffsetX, dragOffsetY;
+    
+    let timerInterval = null;
+    let elapsedTime = 0;
+    
+    // --- SCREEN MANAGEMENT ---
+    function showScreen(screenName) {
+        Object.values(screens).forEach(s => s.classList.remove('active'));
+        screens[screenName].classList.add('active');
+    }
+
+    // --- CANVAS & DRAWING ---
+    function resizeCanvas() {
+        const containerWidth = canvas.parentElement.clientWidth;
+        GRID_SIZE = Math.floor(containerWidth / NUM_COLS);
+        DOCK_HEIGHT = GRID_SIZE * DOCK_ROWS;
+        canvas.width = NUM_COLS * GRID_SIZE;
+        canvas.height = NUM_ROWS * GRID_SIZE + DOCK_HEIGHT;
+        
+        ingresso = { x: 0, y: Math.floor(NUM_ROWS / 2) * GRID_SIZE, w: GRID_SIZE, h: GRID_SIZE, name: "IN" };
+        uscita = { x: (NUM_COLS - 1) * GRID_SIZE, y: Math.floor(NUM_ROWS / 2) * GRID_SIZE, w: GRID_SIZE, h: GRID_SIZE, name: "OUT" };
+
+        // We need to re-initialize machine positions if the screen is resized
+        if(screens.game.classList.contains('active')){
+            initGame(false); // Call initGame without resetting timer
+        }
+        draw();
+    }
+    
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawGrid() {
+        ctx.strokeStyle = '#4a5568';
+        ctx.lineWidth = 1;
+        // Main grid
+        for (let i = 1; i < NUM_COLS; i++) {
+            ctx.beginPath();
+            ctx.moveTo(i * GRID_SIZE, 0);
+            ctx.lineTo(i * GRID_SIZE, NUM_ROWS * GRID_SIZE);
+            ctx.stroke();
+        }
+        for (let i = 1; i < NUM_ROWS; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, i * GRID_SIZE);
+            ctx.lineTo(canvas.width, i * GRID_SIZE);
+            ctx.stroke();
+        }
+        // Dock area
+        ctx.beginPath();
+        ctx.moveTo(0, NUM_ROWS * GRID_SIZE);
+        ctx.lineTo(canvas.width, NUM_ROWS * GRID_SIZE);
+        ctx.stroke();
+    }
+
+    function drawStaticElements() {
+        // INGRESSO/USCITA
+        [ingresso, uscita].forEach(elem => {
+            ctx.fillStyle = '#48bb78';
+            ctx.fillRect(elem.x, elem.y, elem.w, elem.h);
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${GRID_SIZE * 0.4}px 'Roboto Mono'`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(elem.name, elem.x + elem.w / 2, elem.y + elem.h / 2);
+        });
+    }
+
+    function drawMachine(machine) {
+        if (machine === draggedMachine) return;
+        ctx.fillStyle = machine.color;
+        ctx.fillRect(machine.x, machine.y, GRID_SIZE, GRID_SIZE);
+        ctx.fillStyle = 'white';
+        ctx.font = `${GRID_SIZE * 0.25}px 'Roboto Mono'`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(machine.name, machine.x + GRID_SIZE / 2, machine.y + GRID_SIZE / 2);
+    }
+
+    function drawDraggedMachine() {
+        if (!draggedMachine) return;
+        ctx.globalAlpha = 0.7;
+        drawMachine(draggedMachine);
+        ctx.globalAlpha = 1.0;
+    }
+
+    function draw() {
+        clearCanvas();
+        drawGrid();
+        drawStaticElements();
+        machines.forEach(drawMachine);
+        drawDraggedMachine(); // Draw last to be on top
+    }
+
+    // --- GAME LOGIC ---
+    function initGame(resetTimer = true) {
+        if (resetTimer) {
+            elapsedTime = 0;
+            if(timerInterval) clearInterval(timerInterval);
+             timerInterval = setInterval(() => {
+                elapsedTime++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+        updateTimerDisplay();
+
+        const seqList = document.getElementById('sequence-list');
+        seqList.innerHTML = MACHINES_CONFIG.map((m, i) => `<span>${i+1}. ${m.name}</span>`).join('<br>');
+        
+        machines = MACHINES_CONFIG.map((cfg, i) => {
+            const col = i % NUM_COLS;
+            const row = Math.floor(i / NUM_COLS);
+            return {
+                ...cfg,
+                isPlaced: false,
+                x: col * GRID_SIZE,
+                y: NUM_ROWS * GRID_SIZE + row * GRID_SIZE,
+                col: null,
+                row: null,
+            };
+        });
+        
+        draw();
+    }
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
+        const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+        document.getElementById('timer').textContent = `Tempo: ${minutes}:${seconds}`;
+    }
+
+    function endGame() {
+        clearInterval(timerInterval);
+        
+        const placed = machines.filter(m => m.isPlaced);
+        if (placed.length < machines.length) {
+            alert("Devi piazzare tutte le macchine prima di avviare la produzione!");
+            timerInterval = setInterval(() => { elapsedTime++; updateTimerDisplay(); }, 1000);
+            return;
+        }
+
+        let unvisited = [...placed];
+        let userSequence = [];
+        let currentPos = { col: ingresso.x / GRID_SIZE, row: ingresso.y / GRID_SIZE };
+
+        while(unvisited.length > 0) {
+            unvisited.sort((a, b) => {
+                const distA = Math.abs(a.col - currentPos.col) + Math.abs(a.row - currentPos.row);
+                const distB = Math.abs(b.col - currentPos.col) + Math.abs(b.row - currentPos.row);
+                return distA - distB;
+            });
+            const nextMachine = unvisited.shift();
+            userSequence.push(nextMachine);
+            currentPos = { col: nextMachine.col, row: nextMachine.row };
+        }
+
+        const userSequenceIds = userSequence.map(m => m.id);
+        const isSequenceCorrect = JSON.stringify(userSequenceIds) === JSON.stringify(REQUIRED_SEQUENCE);
+
+        let totalDistance = 0;
+        let lastPos = { col: ingresso.x / GRID_SIZE, row: ingresso.y / GRID_SIZE };
+        const pathPoints = [lastPos];
+        userSequence.forEach(m => {
+            totalDistance += Math.abs(m.col - lastPos.col) + Math.abs(m.row - lastPos.row);
+            lastPos = { col: m.col, row: m.row };
+            pathPoints.push(lastPos);
+        });
+        totalDistance += Math.abs(uscita.x / GRID_SIZE - lastPos.col) + Math.abs(uscita.y / GRID_SIZE - lastPos.row);
+        pathPoints.push({ col: uscita.x / GRID_SIZE, row: uscita.y / GRID_SIZE });
+
+
+        let finalPrize = 100;
+        let distancePenalty = 0;
+        let timePenalty = 0;
+        const optimalDistance = (uscita.x / GRID_SIZE - ingresso.x / GRID_SIZE) + (machines.length - 1);
+
+        if (!isSequenceCorrect) {
+            finalPrize = 0;
+            document.getElementById('result-sequence').innerHTML = `<span class="error-message">ERRATA!</span>`;
+        } else {
+            document.getElementById('result-sequence').innerHTML = `<span style="color: var(--success-color);">CORRETTA ✔️</span>`;
+            distancePenalty = Math.max(0, (totalDistance - optimalDistance) * 4);
+            timePenalty = Math.max(0, (elapsedTime - 60) * 0.25);
+            finalPrize = 100 - distancePenalty - timePenalty;
+        }
+
+        finalPrize = Math.max(0, Math.round(finalPrize * 100) / 100);
+
+        document.getElementById('result-distance').textContent = `${totalDistance} metri (Ottimale: ${optimalDistance})`;
+        document.getElementById('result-time').textContent = `${elapsedTime} secondi`;
+        document.getElementById('penalty-distance').textContent = `- €${distancePenalty.toFixed(2)}`;
+        document.getElementById('penalty-time').textContent = `- €${timePenalty.toFixed(2)}`;
+        document.getElementById('final-prize').textContent = `€${finalPrize.toFixed(2)}`;
+        
+        const finalMessage = document.getElementById('final-message');
+        if (finalPrize > 0) {
+            finalMessage.textContent = "Congratulazioni, Ingegnere! Che questo sia il primo di tanti processi che ottimizzerai. Ora vieni a riscuotere il tuo meritatissimo premio!";
+        } else {
+            finalMessage.textContent = "Anche i migliori ingegneri affrontano delle sfide. Congratulazioni comunque per la tua laurea, siamo super orgogliosi di te!";
+        }
+
+        showScreen('result');
+        if(isSequenceCorrect) {
+            animatePath(pathPoints);
+        }
+    }
+    
+    function animatePath(points) {
+        let step = 0;
+        let progress = 0;
+        
+        function animate() {
+            if (step >= points.length - 1) return;
+
+            const startPoint = points[step];
+            const endPoint = points[step + 1];
+            
+            const startX = startPoint.col * GRID_SIZE + GRID_SIZE / 2;
+            const startY = startPoint.row * GRID_SIZE + GRID_SIZE / 2;
+            const endX = endPoint.col * GRID_SIZE + GRID_SIZE / 2;
+            const endY = endPoint.row * GRID_SIZE + GRID_SIZE / 2;
+
+            const currentX = startX + (endX - startX) * progress;
+            const currentY = startY + (endY - startY) * progress;
+
+            draw();
+            
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(255, 255, 0, 0.5)";
+            ctx.lineWidth = 5;
+            ctx.moveTo(points[0].col * GRID_SIZE + GRID_SIZE / 2, points[0].row * GRID_SIZE + GRID_SIZE / 2);
+            for(let i = 1; i <= step; i++) {
+                ctx.lineTo(points[i].col * GRID_SIZE + GRID_SIZE / 2, points[i].row * GRID_SIZE + GRID_SIZE / 2);
+            }
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+
+            progress += 0.05;
+            if (progress >= 1.0) {
+                progress = 0;
+                step++;
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+    }
+
+
+    // --- EVENT LISTENERS ---
+    function getCanvasPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        
+        let clientX, clientY;
+        if (e.touches) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+    function handleDragStart(e) {
+        e.preventDefault();
+        const pos = getCanvasPos(e);
+        
+        for (let i = machines.length - 1; i >= 0; i--) {
+            const machine = machines[i];
+            if (pos.x > machine.x && pos.x < machine.x + GRID_SIZE &&
+                pos.y > machine.y && pos.y < machine.y + GRID_SIZE) {
+                
+                draggedMachine = machine;
+                dragOffsetX = pos.x - machine.x;
+                dragOffsetY = pos.y - machine.y;
+                break;
+            }
+        }
+    }
+    
+    function handleDragMove(e) {
+        if (!draggedMachine) return;
+        e.preventDefault();
+        const pos = getCanvasPos(e);
+        draggedMachine.x = pos.x - dragOffsetX;
+        draggedMachine.y = pos.y - dragOffsetY;
+        draw();
+    }
+
+    function handleDragEnd(e) {
+        if (!draggedMachine) return;
+        e.preventDefault();
+        
+        const col = Math.floor((draggedMachine.x + GRID_SIZE / 2) / GRID_SIZE);
+        const row = Math.floor((draggedMachine.y + GRID_SIZE / 2) / GRID_SIZE);
+
+        const isOverGrid = row >= 0 && row < NUM_ROWS && col >= 0 && col < NUM_COLS;
+        const isOccupied = machines.some(m => m !== draggedMachine && m.isPlaced && m.col === col && m.row === row);
+        const isStaticArea = (row === Math.floor(NUM_ROWS/2) && (col === 0 || col === NUM_COLS - 1));
+
+        if (isOverGrid && !isOccupied && !isStaticArea) {
+            draggedMachine.isPlaced = true;
+            draggedMachine.col = col;
+            draggedMachine.row = row;
+            draggedMachine.x = col * GRID_SIZE;
+            draggedMachine.y = row * GRID_SIZE;
+        } else {
+            draggedMachine.isPlaced = false;
+            const originalIndex = MACHINES_CONFIG.findIndex(m => m.id === draggedMachine.id);
+            const dockCol = originalIndex % NUM_COLS;
+            const dockRow = Math.floor(originalIndex / NUM_COLS);
+            draggedMachine.x = dockCol * GRID_SIZE;
+            draggedMachine.y = NUM_ROWS * GRID_SIZE + dockRow * GRID_SIZE;
+        }
+
+        draggedMachine = null;
+        draw();
+    }
+
+    startBtn.addEventListener('click', () => {
+        showScreen('game');
+        resizeCanvas();
+    });
+
+    finishBtn.addEventListener('click', endGame);
+
+    canvas.addEventListener('mousedown', handleDragStart);
+    canvas.addEventListener('mousemove', handleDragMove);
+    canvas.addEventListener('mouseup', handleDragEnd);
+    canvas.addEventListener('mouseleave', handleDragEnd);
+
+    canvas.addEventListener('touchstart', handleDragStart, { passive: false });
+    canvas.addEventListener('touchmove', handleDragMove, { passive: false });
+    canvas.addEventListener('touchend', handleDragEnd);
+
+    window.addEventListener('resize', resizeCanvas);
+});
+</script>
+
+</body>
+</html>
