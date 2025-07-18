@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Message For You</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Fonts */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Hide scrollbars */
+        }
+
+        .font-title {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Lock Screen Styles */
+        #lock-screen {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            z-index: 100;
+        }
+
+        #lock-screen.unlocked {
+            opacity: 0;
+            transform: scale(1.2);
+            pointer-events: none;
+        }
+
+        /* Underwater World Styles */
+        #underwater-world {
+            background: linear-gradient(to top, #001f3f 0%, #0074D9 60%, #7FDBFF 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* --- NEW: Centered GIF Style --- */
+        .centered-gif {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 80%;
+            width: 250px;
+            height: auto;
+            z-index: 15; /* Make sure it's above fish but below lock screen */
+        }
+
+
+        /* Bubbles Animation */
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: rise linear infinite;
+            z-index: 20; /* Bubbles in front of some elements */
+        }
+
+        @keyframes rise {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            90% {
+                 opacity: 1;
+            }
+            100% {
+                transform: translateY(-110vh);
+                opacity: 0;
+            }
+        }
+
+        /* Abstract Fish and Organisms */
+        .fish {
+            position: absolute;
+            height: 20px;
+            width: 50px;
+            border-radius: 50%;
+            animation: swim linear infinite;
+            z-index: 5;
+        }
+        
+        .fish::before, .fish::after {
+            content: '';
+            position: absolute;
+        }
+
+        /* Fish Type 1: Orange */
+        .fish.orange {
+            background: radial-gradient(circle at 10px 5px, #ff8c00, #ff4500);
+            animation-duration: 15s;
+        }
+        .fish.orange::after { /* Tail */
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid #ff4500;
+            right: -10px;
+            top: 0;
+        }
+
+        /* Fish Type 2: Pink/Yellow */
+        .fish.pink {
+            background: radial-gradient(circle at 10px 5px, #FFD700, #FF69B4);
+            animation-duration: 22s;
+            animation-delay: 3s;
+        }
+        .fish.pink::after { /* Tail */
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 12px solid #FF69B4;
+            right: -8px;
+            top: 2px;
+        }
+        
+        /* Fish Type 3: Tiny Blue School */
+        .fish.blue {
+            height: 8px;
+            width: 20px;
+            background: radial-gradient(circle at 5px 2px, #add8e6, #4682b4);
+            animation-duration: 12s;
+        }
+        .fish.blue::after {
+             width: 0;
+            height: 0;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-left: 6px solid #4682b4;
+            right: -4px;
+            top: 0;
+        }
+
+
+        @keyframes swim {
+            0% {
+                transform: translateX(-100px) rotate(0deg);
+            }
+            48% {
+                 transform: translateX(calc(100vw + 100px)) rotate(0deg);
+            }
+            50% {
+                transform: translateX(calc(100vw + 100px)) rotateY(180deg);
+            }
+            98% {
+                 transform: translateX(-100px) rotateY(180deg);
+            }
+            100% {
+                transform: translateX(-100px) rotate(0deg);
+            }
+        }
+
+        /* Jellyfish */
+        .jellyfish {
+            position: absolute;
+            width: 60px;
+            height: 50px;
+            animation: float 20s ease-in-out infinite;
+            z-index: 6;
+        }
+        .jellyfish-body {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,105,180,0.4), rgba(138,43,226,0.6));
+            border-radius: 50% 50% 20% 20%;
+            animation: pulse 4s ease-in-out infinite alternate;
+        }
+        .jellyfish-tentacles {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+        }
+        .jellyfish-tentacles span {
+            display: block;
+            width: 2px;
+            height: 60px;
+            background: linear-gradient(to bottom, rgba(138,43,226,0.6), transparent);
+            border-radius: 2px;
+            animation: sway 4s ease-in-out infinite alternate;
+        }
+        .jellyfish-tentacles span:nth-child(2) { height: 80px; animation-delay: 0.2s; }
+        .jellyfish-tentacles span:nth-child(3) { height: 50px; animation-delay: -0.2s; }
+        .jellyfish-tentacles span:nth-child(4) { height: 70px; animation-delay: 0.4s; }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-40px); }
+            100% { transform: translateY(0); }
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+        @keyframes sway {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+
+        /* Seabed */
+        .seabed {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #001a33;
+            z-index: 10;
+        }
+        
+        .seaweed {
+            position: absolute;
+            bottom: 0;
+            width: 10px;
+            height: 100px;
+            background: linear-gradient(to top, #006400, #2E8B57);
+            border-radius: 5px 5px 0 0;
+            transform-origin: bottom center;
+            animation: sway-seaweed 8s ease-in-out infinite alternate;
+            z-index: 11;
+        }
+
+        @keyframes sway-seaweed {
+            from { transform: rotate(-10deg) skewX(-5deg); }
+            to { transform: rotate(10deg) skewX(5deg); }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-900">
+
+    <!-- The magical underwater world (hidden initially) -->
+    <div id="underwater-world">
+        <!-- Bubbles will be generated here by JS -->
+
+        <!-- --- NEW: Centered GIF --- -->
+        <img src="images/scubadiving.gif" alt="Glowing Heart" class="centered-gif" onerror="this.style.display='none'">
+
+        <!-- Abstract Fish -->
+        <div class="fish orange" style="top: 10%; animation-delay: -5s;"></div>
+        <div class="fish pink" style="top: 25%;"></div>
+        <div class="fish orange" style="top: 60%; width: 70px; height: 30px; animation-duration: 25s;"></div>
+        <div class="fish pink" style="top: 75%; animation-duration: 18s; animation-delay: -8s;"></div>
+        <div class="fish blue" style="top: 20%; animation-delay: -1s;"></div>
+        <div class="fish blue" style="top: 22%; animation-delay: -1.2s;"></div>
+        <div class="fish blue" style="top: 21%; animation-delay: -1.5s;"></div>
+        <div class="fish blue" style="top: 80%; animation-delay: -10s;"></div>
+        <div class="fish blue" style="top: 81%; animation-delay: -10.3s;"></div>
+
+
+        <!-- Jellyfish -->
+        <div class="jellyfish" style="top: 30%; left: 20%;">
+            <div class="jellyfish-body"></div>
+            <div class="jellyfish-tentacles">
+                <span></span><span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="jellyfish" style="top: 50%; left: 80%; transform: scale(0.8); animation-delay: -5s;">
+            <div class="jellyfish-body"></div>
+            <div class="jellyfish-tentacles">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+
+        <!-- Seabed -->
+        <div class="seabed"></div>
+        <div class="seaweed" style="left: 10%; height: 120px; animation-duration: 10s;"></div>
+        <div class="seaweed" style="left: 25%; height: 80px; animation-delay: -2s;"></div>
+        <div class="seaweed" style="left: 60%; height: 150px; animation-duration: 12s; animation-delay: -5s;"></div>
+        <div class="seaweed" style="left: 85%; height: 100px; animation-delay: -8s;"></div>
+    </div>
+
+    <!-- Lock Screen (on top) - Your text is preserved -->
+    <div id="lock-screen" class="fixed top-0 left-0 w-full h-full flex items-center justify-center p-4">
+        <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl text-center w-full max-w-sm">
+            <h1 class="font-title text-5xl text-cyan-600 mb-2">Per la mia gekita</h1>
+            <p class="text-gray-600 mb-6">Inserisci il codice per sbloccare!</p>
+            
+            <input type="text" id="code-input" class="w-full px-4 py-3 text-center text-lg bg-white/50 border-2 border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition duration-300" placeholder="******">
+            
+            <p id="error-message" class="text-red-500 h-6 mt-2 text-sm"></p>
+
+            <button id="unlock-button" class="w-full bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-600 active:scale-95 transform transition duration-300 shadow-lg mt-4">
+                Scopri la sorpresa
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration - Your secret code is preserved ---
+        const SECRET_CODE = "26/07/2025<3";
+        const BUBBLE_COUNT = 30;
+
+        // --- DOM Elements ---
+        const lockScreen = document.getElementById('lock-screen');
+        const unlockButton = document.getElementById('unlock-button');
+        const codeInput = document.getElementById('code-input');
+        const errorMessage = document.getElementById('error-message');
+        const underwaterWorld = document.getElementById('underwater-world');
+
+        // --- Functions ---
+
+        /**
+         * Checks the entered code and unlocks the screen if correct.
+         */
+        function attemptUnlock() {
+            // Note: I'm not converting to upper case anymore to preserve the case in your secret code.
+            if (codeInput.value.trim() === SECRET_CODE) {
+                // Correct code
+                errorMessage.textContent = '';
+                lockScreen.classList.add('unlocked');
+            } else {
+                // Incorrect code
+                errorMessage.textContent = 'Codice errato, riprova!'; // Changed error message to Italian
+                // Add a shake animation for feedback
+                lockScreen.animate([
+                    { transform: 'translateX(0)' },
+                    { transform: 'translateX(-10px)' },
+                    { transform: 'translateX(10px)' },
+                    { transform: 'translateX(-10px)' },
+                    { transform: 'translateX(0)' }
+                ], {
+                    duration: 300,
+                    easing: 'ease-in-out'
+                });
+            }
+        }
+
+        /**
+         * Creates and animates bubbles in the underwater scene.
+         */
+        function createBubbles() {
+            for (let i = 0; i < BUBBLE_COUNT; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+
+                const size = Math.random() * 40 + 10; // size between 10px and 50px
+                const duration = Math.random() * 10 + 8; // duration between 8s and 18s
+                const delay = Math.random() * 10; // delay up to 10s
+                const position = Math.random() * 100; // horizontal position in %
+
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${position}vw`;
+                bubble.style.animationDuration = `${duration}s`;
+                bubble.style.animationDelay = `${delay}s`;
+
+                underwaterWorld.appendChild(bubble);
+            }
+        }
+
+        // --- Event Listeners ---
+        unlockButton.addEventListener('click', attemptUnlock);
+        
+        // Allow pressing Enter to unlock
+        codeInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                attemptUnlock();
+            }
+        });
+
+        // --- Initialisation ---
+        createBubbles();
+
+    </script>
+</body>
+</html>
