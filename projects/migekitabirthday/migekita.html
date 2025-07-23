@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Special Message For You</title>
+    <title>Sorpresa per la mia Gekita</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -13,6 +13,7 @@
         body {
             font-family: 'Inter', sans-serif;
             overflow: hidden; /* Hide scrollbars */
+            background-color: #001f3f;
         }
 
         .font-title {
@@ -23,7 +24,7 @@
         #lock-screen {
             background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
             transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-            z-index: 100;
+            z-index: 200;
         }
 
         #lock-screen.unlocked {
@@ -31,6 +32,119 @@
             transform: scale(1.2);
             pointer-events: none;
         }
+
+        /* Surface World Styles */
+        #surface-world {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #ffecd2 0%, #fcb69f 100%);
+            z-index: 50;
+            transition: transform 1.5s ease-in-out;
+        }
+        #surface-world.dive {
+            transform: translateY(-100%);
+        }
+        
+        .sky-text {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            text-align: center;
+            color: rgba(0, 0, 0, 0.6);
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.75rem;
+            line-height: 2.25rem;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+            z-index: 51;
+        }
+
+        .sun {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #fff7ad, #ffc371);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 50px #fff7ad;
+        }
+        .sea-surface {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            background: linear-gradient(to bottom, #89cff0, #00a3e0);
+        }
+        
+        .paddler-gif {
+            position: absolute;
+            bottom: 10%;
+            width: 200px;
+            height: auto;
+            pointer-events: none;
+        }
+        #paddler1 {
+            left: 5%;
+        }
+        #paddler2 {
+            left: 45%;
+            transform: scaleX(-1);
+        }
+
+        #clickable-fish-group {
+            position: absolute;
+            bottom: 3%;
+            left: 50%;
+            width: 80px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 55;
+            transform: translateX(-50%);
+        }
+        .surface-fish {
+            position: absolute;
+            width: 25px; 
+            height: 12px;
+            background-color: rgba(255, 255, 150, 0.9);
+            border-radius: 50%;
+            animation: surface-bob 2.5s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 255, 150, 0.8);
+        }
+        .surface-fish:nth-child(1) { top: 15px; left: 10px; }
+        .surface-fish:nth-child(2) { top: 25px; left: 40px; animation-delay: -0.5s; }
+        .surface-fish:nth-child(3) { top: 5px; left: 35px; animation-delay: -1s; }
+        
+        @keyframes surface-bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        #time-gate-message {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 60;
+        }
+        #time-gate-message.show {
+            opacity: 1;
+        }
+
 
         /* Underwater World Styles */
         #underwater-world {
@@ -42,9 +156,13 @@
             height: 100%;
             overflow: hidden;
             z-index: 1;
+            transform: translateY(100%);
+            transition: transform 1.5s ease-in-out;
+        }
+        #underwater-world.active {
+            transform: translateY(0);
         }
 
-        /* --- NEW: Centered GIF Style --- */
         .centered-gif {
             position: absolute;
             top: 50%;
@@ -53,35 +171,40 @@
             max-width: 80%;
             width: 250px;
             height: auto;
-            z-index: 4; /* Make sure it's above fish but below lock screen */
+            z-index: 15;
         }
 
+        /* --- NEW: Underwater Text Style --- */
+        .underwater-text {
+            position: absolute;
+            top: 68%; /* Position it below the centered GIF */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9); /* Light color */
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem; /* A bit smaller than the sky text */
+            line-height: 2rem;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+            z-index: 16; /* Above the centered GIF's z-index */
+        }
 
-        /* Bubbles Animation */
         .bubble {
             position: absolute;
             bottom: -50px;
             background-color: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             animation: rise linear infinite;
-            z-index: 20; /* Bubbles in front of some elements */
+            z-index: 20;
         }
 
         @keyframes rise {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            90% {
-                 opacity: 1;
-            }
-            100% {
-                transform: translateY(-110vh);
-                opacity: 0;
-            }
+            0% { transform: translateY(0); opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-110vh); opacity: 0; }
         }
 
-        /* Abstract Fish and Organisms */
         .fish {
             position: absolute;
             height: 20px;
@@ -90,168 +213,62 @@
             animation: swim linear infinite;
             z-index: 5;
         }
-        
-        .fish::before, .fish::after {
-            content: '';
-            position: absolute;
-        }
-
-        /* Fish Type 1: Orange */
-        .fish.orange {
-            background: radial-gradient(circle at 10px 5px, #ff8c00, #ff4500);
-            animation-duration: 15s;
-        }
-        .fish.orange::after { /* Tail */
-            width: 0;
-            height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-left: 15px solid #ff4500;
-            right: -10px;
-            top: 0;
-        }
-
-        /* Fish Type 2: Pink/Yellow */
-        .fish.pink {
-            background: radial-gradient(circle at 10px 5px, #FFD700, #FF69B4);
-            animation-duration: 22s;
-            animation-delay: 3s;
-        }
-        .fish.pink::after { /* Tail */
-            width: 0;
-            height: 0;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-left: 12px solid #FF69B4;
-            right: -8px;
-            top: 2px;
-        }
-        
-        /* Fish Type 3: Tiny Blue School */
-        .fish.blue {
-            height: 8px;
-            width: 20px;
-            background: radial-gradient(circle at 5px 2px, #add8e6, #4682b4);
-            animation-duration: 12s;
-        }
-        .fish.blue::after {
-             width: 0;
-            height: 0;
-            border-top: 4px solid transparent;
-            border-bottom: 4px solid transparent;
-            border-left: 6px solid #4682b4;
-            right: -4px;
-            top: 0;
-        }
-
+        .fish::before, .fish::after { content: ''; position: absolute; }
+        .fish.orange { background: radial-gradient(circle at 10px 5px, #ff8c00, #ff4500); animation-duration: 15s; }
+        .fish.orange::after { width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-left: 15px solid #ff4500; right: -10px; top: 0; }
+        .fish.pink { background: radial-gradient(circle at 10px 5px, #FFD700, #FF69B4); animation-duration: 22s; animation-delay: 3s; }
+        .fish.pink::after { width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 12px solid #FF69B4; right: -8px; top: 2px; }
+        .fish.blue { height: 8px; width: 20px; background: radial-gradient(circle at 5px 2px, #add8e6, #4682b4); animation-duration: 12s; }
+        .fish.blue::after { width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-left: 6px solid #4682b4; right: -4px; top: 0; }
 
         @keyframes swim {
-            0% {
-                transform: translateX(-100px) rotate(0deg);
-            }
-            48% {
-                 transform: translateX(calc(100vw + 100px)) rotate(0deg);
-            }
-            50% {
-                transform: translateX(calc(100vw + 100px)) rotateY(180deg);
-            }
-            98% {
-                 transform: translateX(-100px) rotateY(180deg);
-            }
-            100% {
-                transform: translateX(-100px) rotate(0deg);
-            }
+            0% { transform: translateX(-100px) rotate(0deg); }
+            48% { transform: translateX(calc(100vw + 100px)) rotate(0deg); }
+            50% { transform: translateX(calc(100vw + 100px)) rotateY(180deg); }
+            98% { transform: translateX(-100px) rotateY(180deg); }
+            100% { transform: translateX(-100px) rotate(0deg); }
         }
 
-        /* Jellyfish */
-        .jellyfish {
-            position: absolute;
-            width: 60px;
-            height: 50px;
-            animation: float 20s ease-in-out infinite;
-            z-index: 6;
-        }
-        .jellyfish-body {
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,105,180,0.4), rgba(138,43,226,0.6));
-            border-radius: 50% 50% 20% 20%;
-            animation: pulse 4s ease-in-out infinite alternate;
-        }
-        .jellyfish-tentacles {
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 4px;
-        }
-        .jellyfish-tentacles span {
-            display: block;
-            width: 2px;
-            height: 60px;
-            background: linear-gradient(to bottom, rgba(138,43,226,0.6), transparent);
-            border-radius: 2px;
-            animation: sway 4s ease-in-out infinite alternate;
-        }
+        .jellyfish { position: absolute; width: 60px; height: 50px; animation: float 20s ease-in-out infinite; z-index: 6; }
+        .jellyfish-body { width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,105,180,0.4), rgba(138,43,226,0.6)); border-radius: 50% 50% 20% 20%; animation: pulse 4s ease-in-out infinite alternate; }
+        .jellyfish-tentacles { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; }
+        .jellyfish-tentacles span { display: block; width: 2px; height: 60px; background: linear-gradient(to bottom, rgba(138,43,226,0.6), transparent); border-radius: 2px; animation: sway 4s ease-in-out infinite alternate; }
         .jellyfish-tentacles span:nth-child(2) { height: 80px; animation-delay: 0.2s; }
         .jellyfish-tentacles span:nth-child(3) { height: 50px; animation-delay: -0.2s; }
         .jellyfish-tentacles span:nth-child(4) { height: 70px; animation-delay: 0.4s; }
 
-        @keyframes float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-40px); }
-            100% { transform: translateY(0); }
-        }
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.05); }
-        }
-        @keyframes sway {
-            from { transform: rotate(-5deg); }
-            to { transform: rotate(5deg); }
-        }
+        @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-40px); } 100% { transform: translateY(0); } }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+        @keyframes sway { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
 
-        /* Seabed */
-        .seabed {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            background: #001a33;
-            z-index: 10;
-        }
-        
-        .seaweed {
-            position: absolute;
-            bottom: 0;
-            width: 10px;
-            height: 100px;
-            background: linear-gradient(to top, #006400, #2E8B57);
-            border-radius: 5px 5px 0 0;
-            transform-origin: bottom center;
-            animation: sway-seaweed 8s ease-in-out infinite alternate;
-            z-index: 11;
-        }
-
-        @keyframes sway-seaweed {
-            from { transform: rotate(-10deg) skewX(-5deg); }
-            to { transform: rotate(10deg) skewX(5deg); }
-        }
-
+        .seabed { position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; background: #001a33; z-index: 10; }
+        .seaweed { position: absolute; bottom: 0; width: 10px; height: 100px; background: linear-gradient(to top, #006400, #2E8B57); border-radius: 5px 5px 0 0; transform-origin: bottom center; animation: sway-seaweed 8s ease-in-out infinite alternate; z-index: 11; }
+        @keyframes sway-seaweed { from { transform: rotate(-10deg) skewX(-5deg); } to { transform: rotate(10deg) skewX(5deg); } }
     </style>
 </head>
-<body class="bg-gray-900">
+<body>
 
-    <!-- The magical underwater world (hidden initially) -->
+    <!-- Scene 1: Surface World -->
+    <div id="surface-world" class="hidden">
+        <div class="sky-text">Paddle Surf all'alba<br>26/07/2025 ore 6:00, Barcelona</div>
+        <div class="sun"></div>
+        <div class="sea-surface"></div>
+        <img src="images/gekitapaddel.gif" alt="Paddleboarder" class="paddler-gif" id="paddler1" onerror="this.style.display='none'">
+        <img src="images/stzanpaddle.gif" alt="Paddleboarder" class="paddler-gif" id="paddler2" onerror="this.style.display='none'">
+        
+        <div id="clickable-fish-group">
+            <div class="surface-fish"></div>
+            <div class="surface-fish"></div>
+            <div class="surface-fish"></div>
+        </div>
+        <div id="time-gate-message">Scoprilo il giorno del tuo compleanno</div>
+    </div>
+
+    <!-- Scene 2: The magical underwater world -->
     <div id="underwater-world">
-        <!-- Bubbles will be generated here by JS -->
-
-        <!-- --- NEW: Centered GIF --- -->
-        <img src="images/scubadiving.gif" alt="Glowing Heart" class="centered-gif" onerror="this.style.display='none'">
-
-        <!-- Abstract Fish -->
+        <img src="images/scubadiving.gif" alt="Scuba Diving" class="centered-gif" onerror="this.style.display='none'">
+        <!-- --- NEW: Added Underwater Text --- -->
+        <div class="underwater-text">Open Water PADI Certificate<br>August 2025, Barcelona</div>
         <div class="fish orange" style="top: 10%; animation-delay: -5s;"></div>
         <div class="fish pink" style="top: 25%;"></div>
         <div class="fish orange" style="top: 60%; width: 70px; height: 30px; animation-duration: 25s;"></div>
@@ -261,23 +278,14 @@
         <div class="fish blue" style="top: 21%; animation-delay: -1.5s;"></div>
         <div class="fish blue" style="top: 80%; animation-delay: -10s;"></div>
         <div class="fish blue" style="top: 81%; animation-delay: -10.3s;"></div>
-
-
-        <!-- Jellyfish -->
         <div class="jellyfish" style="top: 30%; left: 20%;">
             <div class="jellyfish-body"></div>
-            <div class="jellyfish-tentacles">
-                <span></span><span></span><span></span><span></span>
-            </div>
+            <div class="jellyfish-tentacles"><span></span><span></span><span></span><span></span></div>
         </div>
         <div class="jellyfish" style="top: 50%; left: 80%; transform: scale(0.8); animation-delay: -5s;">
             <div class="jellyfish-body"></div>
-            <div class="jellyfish-tentacles">
-                <span></span><span></span><span></span>
-            </div>
+            <div class="jellyfish-tentacles"><span></span><span></span><span></span></div>
         </div>
-
-        <!-- Seabed -->
         <div class="seabed"></div>
         <div class="seaweed" style="left: 10%; height: 120px; animation-duration: 10s;"></div>
         <div class="seaweed" style="left: 25%; height: 80px; animation-delay: -2s;"></div>
@@ -285,16 +293,13 @@
         <div class="seaweed" style="left: 85%; height: 100px; animation-delay: -8s;"></div>
     </div>
 
-    <!-- Lock Screen (on top) - Your text is preserved -->
+    <!-- Lock Screen (on top) -->
     <div id="lock-screen" class="fixed top-0 left-0 w-full h-full flex items-center justify-center p-4">
         <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl text-center w-full max-w-sm">
             <h1 class="font-title text-5xl text-cyan-600 mb-2">Per la mia gekita</h1>
             <p class="text-gray-600 mb-6">Inserisci il codice per sbloccare!</p>
-            
             <input type="text" id="code-input" class="w-full px-4 py-3 text-center text-lg bg-white/50 border-2 border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition duration-300" placeholder="******">
-            
             <p id="error-message" class="text-red-500 h-6 mt-2 text-sm"></p>
-
             <button id="unlock-button" class="w-full bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-cyan-600 active:scale-95 transform transition duration-300 shadow-lg mt-4">
                 Scopri la sorpresa
             </button>
@@ -302,7 +307,7 @@
     </div>
 
     <script>
-        // --- Configuration - Your secret code is preserved ---
+        // --- Configuration ---
         const SECRET_CODE = "26/07/2025<3";
         const BUBBLE_COUNT = 30;
 
@@ -311,33 +316,58 @@
         const unlockButton = document.getElementById('unlock-button');
         const codeInput = document.getElementById('code-input');
         const errorMessage = document.getElementById('error-message');
+        
+        const surfaceWorld = document.getElementById('surface-world');
         const underwaterWorld = document.getElementById('underwater-world');
+        const clickableFishGroup = document.getElementById('clickable-fish-group');
+        const timeGateMessage = document.getElementById('time-gate-message');
 
         // --- Functions ---
 
         /**
-         * Checks the entered code and unlocks the screen if correct.
+         * Checks the entered code and unlocks the first scene.
          */
         function attemptUnlock() {
-            // Note: I'm not converting to upper case anymore to preserve the case in your secret code.
             if (codeInput.value.trim() === SECRET_CODE) {
-                // Correct code
                 errorMessage.textContent = '';
                 lockScreen.classList.add('unlocked');
+                // Show the surface world after a short delay for the animation
+                setTimeout(() => {
+                    surfaceWorld.classList.remove('hidden');
+                }, 500);
             } else {
-                // Incorrect code
-                errorMessage.textContent = 'Codice errato, riprova!'; // Changed error message to Italian
-                // Add a shake animation for feedback
+                errorMessage.textContent = 'Codice errato, riprova!';
                 lockScreen.animate([
-                    { transform: 'translateX(0)' },
-                    { transform: 'translateX(-10px)' },
-                    { transform: 'translateX(10px)' },
-                    { transform: 'translateX(-10px)' },
+                    { transform: 'translateX(0)' }, { transform: 'translateX(-10px)' },
+                    { transform: 'translateX(10px)' }, { transform: 'translateX(-10px)' },
                     { transform: 'translateX(0)' }
-                ], {
-                    duration: 300,
-                    easing: 'ease-in-out'
-                });
+                ], { duration: 300, easing: 'ease-in-out' });
+            }
+        }
+
+        /**
+         * Checks the date and reveals the underwater scene or a message.
+         */
+        function attemptToDive() {
+            const now = new Date();
+            const targetDate = new Date('2025-07-26T00:00:00');
+
+            // Check if the current date is on or after the target date
+            if (now.getFullYear() > targetDate.getFullYear() ||
+               (now.getFullYear() === targetDate.getFullYear() && now.getMonth() > targetDate.getMonth()) ||
+               (now.getFullYear() === targetDate.getFullYear() && now.getMonth() === targetDate.getMonth() && now.getDate() >= targetDate.getDate())) {
+                
+                // It's time! Reveal the underwater world.
+                surfaceWorld.classList.add('dive');
+                underwaterWorld.classList.add('active');
+                createBubbles();
+
+            } else {
+                // Not yet time, show the message
+                timeGateMessage.classList.add('show');
+                setTimeout(() => {
+                    timeGateMessage.classList.remove('show');
+                }, 3000); // Hide message after 3 seconds
             }
         }
 
@@ -345,37 +375,33 @@
          * Creates and animates bubbles in the underwater scene.
          */
         function createBubbles() {
+            // Prevent creating bubbles more than once
+            if (underwaterWorld.querySelectorAll('.bubble').length > 0) return;
+
             for (let i = 0; i < BUBBLE_COUNT; i++) {
                 const bubble = document.createElement('div');
                 bubble.classList.add('bubble');
-
-                const size = Math.random() * 40 + 10; // size between 10px and 50px
-                const duration = Math.random() * 10 + 8; // duration between 8s and 18s
-                const delay = Math.random() * 10; // delay up to 10s
-                const position = Math.random() * 100; // horizontal position in %
-
+                const size = Math.random() * 40 + 10;
+                const duration = Math.random() * 10 + 8;
+                const delay = Math.random() * 10;
+                const position = Math.random() * 100;
                 bubble.style.width = `${size}px`;
                 bubble.style.height = `${size}px`;
                 bubble.style.left = `${position}vw`;
                 bubble.style.animationDuration = `${duration}s`;
                 bubble.style.animationDelay = `${delay}s`;
-
                 underwaterWorld.appendChild(bubble);
             }
         }
 
         // --- Event Listeners ---
         unlockButton.addEventListener('click', attemptUnlock);
-        
-        // Allow pressing Enter to unlock
         codeInput.addEventListener('keyup', (event) => {
             if (event.key === 'Enter') {
                 attemptUnlock();
             }
         });
-
-        // --- Initialisation ---
-        createBubbles();
+        clickableFishGroup.addEventListener('click', attemptToDive);
 
     </script>
 </body>
