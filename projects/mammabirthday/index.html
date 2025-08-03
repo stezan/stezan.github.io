@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una Sorpresa per Te!</title>
+    <style>
+        /* --- Import Fonts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&display=swap');
+
+        /* --- Global Styles & Variables --- */
+        :root {
+            --primary-color: #d81b60; /* A vibrant pink */
+            --secondary-color: #fce4ec; /* A very light pink */
+            --text-color: #333;
+            --gold-color: #ffd700;
+            --background-gradient: linear-gradient(135deg, #f8bbd0, #fce4ec);
+        }
+
+        /* --- Basic Setup (Mobile First) --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            overflow: hidden;
+            text-align: center;
+            transition: background 0.5s ease;
+        }
+
+        /* --- Video Background & Overlay --- */
+        #background-video {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -2;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        #video-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay for text readability */
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        /* --- Main Container --- */
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            padding: 2.5em 1.5em;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease, opacity 0.5s ease, background 0.5s ease, box-shadow 0.5s ease;
+            z-index: 10;
+        }
+
+        /* --- Section Styling --- */
+        .hidden {
+            display: none;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            color: var(--primary-color);
+            margin-bottom: 0.2em;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 1.5em;
+        }
+        
+        .riddle {
+            font-style: italic;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 1em;
+            margin-bottom: 1.5em;
+            min-height: 100px;
+        }
+        
+        #progress-indicator {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 0.5em;
+        }
+
+        /* --- Form Elements --- */
+        button {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.2em;
+            padding: 0.8em 1.5em;
+            border-radius: 50px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: block;
+            width: 100%;
+            margin-top: 1em;
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8em;
+            font-size: 1.2em;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* --- Final Reveal Section --- */
+        #final-reveal .icon {
+            font-size: 3em;
+            color: var(--primary-color);
+            margin-bottom: 0.2em;
+            transition: color 0.5s ease;
+        }
+        
+        #final-reveal h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5em;
+            color: var(--primary-color);
+            margin: 0;
+            animation: pop-in 1s ease-out;
+            transition: color 0.5s ease;
+        }
+        
+        #final-reveal p {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 0.5em;
+            transition: color 0.5s ease;
+        }
+
+        /* --- STYLES FOR VIDEO ACTIVE STATE --- */
+        body.video-active {
+            background: #000;
+        }
+        body.video-active .container {
+            background: transparent;
+            box-shadow: none;
+        }
+        body.video-active #final-reveal p,
+        body.video-active #final-reveal p strong {
+            color: #fff; /* White text over video */
+        }
+        body.video-active #final-reveal h2,
+        body.video-active #final-reveal .icon {
+            color: var(--gold-color); /* Gold text for headings */
+        }
+
+        /* --- Animations --- */
+        .pulsate { animation: pulsate 1.5s infinite; }
+        @keyframes pulsate { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes pop-in { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* --- Confetti Effect --- */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--gold-color);
+            opacity: 0.9;
+            border-radius: 50%;
+            animation: fall 5s linear forwards;
+            top: -20px;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+
+    <video id="background-video" loop muted playsinline>
+        <source src="images/mammina.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div id="video-overlay"></div>
+
+
+    <div class="container" id="main-container">
+
+        <div id="intro">
+            <h1>Tanti Auguri Mamma!</h1>
+            <p>Per il tuo compleanno, ho pensato a qualcosa di speciale... ✨</p>
+            <p>Rispondi a 3 domande per svelare la tua sorpresa!</p>
+            <button id="start-button" class="pulsate">Inizia!</button>
+        </div>
+
+        <div id="quiz" class="hidden">
+            <h1>Indovina la Meta!</h1>
+            <p id="progress-indicator"></p>
+            <p id="question-text" class="riddle"></p>
+            <input type="text" id="answer-input" placeholder="Scrivi la risposta qui...">
+            <button id="submit-button">Conferma Risposta</button>
+        </div>
+
+        <div id="final-reveal" class="hidden">
+             <div class="icon">🏛️</div>
+             <p>Esatto! Si parte per...</p>
+             <h2>ROMA!</h2>
+             <p><strong>🚄 Treno & 🏨 Hotel Inclusi!</strong></p>
+             <p><strong>🗓️ Periodo: Novembre 2025</strong></p>
+             <p style="font-size: 1em; margin-top: 1.5em; font-weight: 400;">Preparati a vivere la Città Eterna!<br>Buon compleanno Mamma!<br><br>Stefano ❤️</p>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Elements ---
+        const startButton = document.getElementById('start-button');
+        const submitButton = document.getElementById('submit-button');
+        const answerInput = document.getElementById('answer-input');
+        const mainContainer = document.getElementById('main-container');
+        const body = document.body;
+
+        const introSection = document.getElementById('intro');
+        const quizSection = document.getElementById('quiz');
+        const finalRevealSection = document.getElementById('final-reveal');
+        
+        const progressIndicator = document.getElementById('progress-indicator');
+        const questionText = document.getElementById('question-text');
+        
+        const backgroundVideo = document.getElementById('background-video');
+        const videoOverlay = document.getElementById('video-overlay');
+
+        // --- Quiz Data ---
+        const questions = [
+            { question: "Quale piatto, il cui nome significa 'formaggio e pepe', è un simbolo della cucina di questa città?", answer: "CACIO E PEPE" },
+            { question: "Come si chiama il più grande anfiteatro del mondo, situato nel cuore della destinazione?", answer: "COLOSSEO" },
+            { question: "Sono conosciuta come la 'Città Eterna'. Chi sono?", answer: "ROMA" }
+        ];
+        let currentQuestionIndex = 0;
+
+        // --- Functions ---
+        function displayQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            progressIndicator.textContent = `Domanda ${currentQuestionIndex + 1} di ${questions.length}`;
+            questionText.innerHTML = currentQuestion.question;
+            answerInput.value = '';
+            answerInput.placeholder = 'Scrivi la risposta qui...';
+            answerInput.focus();
+        }
+        
+        function checkAnswer() {
+            const userAnswer = answerInput.value.trim().toUpperCase();
+            if (userAnswer === questions[currentQuestionIndex].answer) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    displayQuestion();
+                } else {
+                    triggerFinalReveal();
+                }
+            } else {
+                showError();
+            }
+        }
+        
+        function showError() {
+            answerInput.style.borderColor = 'red';
+            mainContainer.animate([ { transform: 'translateX(0)' }, { transform: 'translateX(-10px)' }, { transform: 'translateX(10px)' }, { transform: 'translateX(-10px)' }, { transform: 'translateX(10px)' }, { transform: 'translateX(0)' } ], { duration: 300, easing: 'ease-in-out' });
+            setTimeout(() => { answerInput.style.borderColor = '#ddd'; }, 1500);
+        }
+        
+        function triggerFinalReveal() {
+            // Hide the quiz card
+            mainContainer.style.transform = 'scale(0)';
+            mainContainer.style.opacity = '0';
+
+            setTimeout(() => {
+                // Activate video background
+                body.classList.add('video-active');
+                backgroundVideo.style.display = 'block';
+                videoOverlay.style.display = 'block';
+                
+                // Use a short timeout to allow display:block to apply before starting opacity transition
+                setTimeout(() => {
+                    backgroundVideo.style.opacity = '1';
+                    videoOverlay.style.opacity = '1';
+                    backgroundVideo.play().catch(error => {
+                        console.log("Autoplay was prevented:", error);
+                    });
+                }, 50);
+
+                // Show the final reveal card
+                quizSection.classList.add('hidden');
+                finalRevealSection.classList.remove('hidden');
+                mainContainer.style.transform = 'scale(1)';
+                mainContainer.style.opacity = '1';
+                triggerConfetti();
+            }, 500);
+        }
+        
+        // --- Event Listeners ---
+        startButton.addEventListener('click', () => {
+            introSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            displayQuestion();
+        });
+
+        submitButton.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') checkAnswer(); });
+
+        // --- Confetti Effect ---
+        function triggerConfetti() {
+            const colors = ['#ffd700', '#ffffff', '#f8bbd0'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 8 + 4;
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                const animationDuration = Math.random() * 3 + 2;
+                confetti.style.animation = `fall ${animationDuration}s linear forwards`;
+                confetti.style.setProperty('--x-drift', (Math.random() - 0.5) * 400 + 'px');
+                body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), animationDuration * 1000);
+            }
+        }
+        
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `@keyframes fall { from { transform: translateY(0) translateX(0); opacity: 1; } to { transform: translateY(120vh) translateX(var(--x-drift, 0)); opacity: 0; } }`;
+        document.head.appendChild(styleSheet);
+    </script>
+</body>
+</html>
