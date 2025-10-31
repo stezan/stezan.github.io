@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>For Marcelita</title>
+    <style>
+        /* --- Basic Setup --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #f0f2f5; /* Light, soft background */
+        }
+
+        /* --- Game Container --- */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* --- Screen Styling --- */
+        .screen {
+            display: none; /* Hide all screens by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Show the 'active' screen */
+        .screen.active {
+            display: flex;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 16px;
+        }
+
+        /* --- Card Selection Screen --- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 140px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            font-size: 60px; /* Emoji size */
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative; /* for printed indicator */
+        }
+
+        .card:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Printed indicator styling */
+        .card.printed {
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.6), 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card.printed::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #22c55e; /* green */
+            color: #fff;
+            font-size: 16px;
+            line-height: 22px;
+            text-align: center;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        /* --- Printer Screen --- */
+        #printer-screen h1 {
+            font-size: 20px;
+            color: #555;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .printer-body {
+            width: 90%;
+            max-width: 300px;
+            height: 80px;
+            background-color: #d1d5db; /* Printer color */
+            border-radius: 10px;
+            border: 5px solid #a1a5ab;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .printer-slot {
+            width: 200px;
+            height: 10px;
+            background-color: #444;
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 5px;
+            overflow: hidden; /* This is crucial for the animation */
+        }
+
+        /* The photo being "printed" */
+        #printed-photo {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            /* Start hidden, pushed up inside the slot */
+            transform: translateY(-100%);
+            transition: transform 2.5s ease-out; /* The print animation! */
+        }
+
+        /* Class added by JS to start printing */
+        #printed-photo.printing {
+            transform: translateY(0);
+        }
+
+
+        /* --- Final Photo Screen --- */
+        #final-photo {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            margin-bottom: 25px;
+        }
+
+        #message {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e5398d; /* A nice pink */
+            margin-bottom: 30px;
+        }
+
+        .reset-button {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007aff; /* iOS blue */
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+
+        <div id="card-screen" class="screen active">
+            <h1>Ciao Marcelita! ❤️ <br>Sono una stampante magica!<br><br>Scegli una carta...</h1>
+            <div class="card-grid">
+                <div class="card" data-choice="camel">🐫</div>
+                <div class="card" data-choice="fish">🐟</div>
+                <div class="card" data-choice="camera">📸</div>
+                <div class="card" data-choice="star">⭐️</div>
+            </div>
+        </div>
+
+        <div id="printer-screen" class="screen">
+            <h1 id="printer-status">Sto stampando la tua foto...</h1>
+            <div class="printer-body">
+                <div class="printer-slot">
+                    <img id="printed-photo" src="" alt="Printing...">
+                </div>
+            </div>
+        </div>
+
+        <div id="final-photo-screen" class="screen">
+            <img id="final-photo" src="" alt="Your picture">
+            <p id="message">Un momento molto special di noi due!</p>
+            <button class="reset-button">Vuoi stamparne un'altra?</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- TODO: PUT YOUR 4 PICTURES HERE ---
+        //
+        // How to use:
+        // 1. Get your 4 pictures.
+        // 2. Put them in the SAME FOLDER as this 'index.html' file.
+        // 3. Rename the files to match (e.g., 'star-pic.jpg', 'camel-pic.png').
+        // 4. Update the text in the quotes below.
+        //
+        const pictureDatabase = {
+            'camel': 'images/camel.jpg',     // e.g., 'vacation_photo.png'
+            'fish': 'images/fish.jpg',       // e.g., 'silly_selfie.jpg'
+            'camera': 'images/photo.jpg',    // e.g., 'favorite_memory.jpg'
+            'star': 'images/star.jpg',       // e.g., 'our_first_date.jpg'
+        };
+        // ----------------------------------------
+
+        // Optional: customize the message shown on the final screen per choice.
+        // Edit these strings to your liking.
+        const messageDatabase = {
+            'star': 'La puoi trovare sopra il bagno. Sopra!',
+            'camel': 'La puoi trovare nella borsa appesa della Decathlon!',
+            'fish': 'La puoi trovare dove ci sono i guantoni da boxe!',
+            'camera': 'La puoi trovare dove si nasconde Polpetta a volte 🐱'
+        };
+
+
+        // --- Game Logic ---
+
+        // Get all the elements
+        const screens = document.querySelectorAll('.screen');
+        const cards = document.querySelectorAll('.card');
+        const printerStatus = document.getElementById('printer-status');
+        const printedPhoto = document.getElementById('printed-photo');
+        const finalPhoto = document.getElementById('final-photo');
+        const messageEl = document.getElementById('message');
+        const resetButton = document.querySelector('.reset-button');
+
+        let chosenPictureUrl = '';
+        let currentChoiceKey = '';
+        const printedChoices = new Set();
+
+        // Function to switch screens
+        function showScreen(screenId) {
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // 1. Listen for any card click
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const choice = card.dataset.choice;
+                chosenPictureUrl = pictureDatabase[choice];
+                currentChoiceKey = choice;
+                startPrinting(chosenPictureUrl);
+            });
+        });
+
+        // 2. Show printer and start animation
+        function startPrinting(imageUrl) {
+            // Go to the printer screen
+            showScreen('printer-screen');
+
+            // Set the photo source (it's still hidden inside the slot)
+            printedPhoto.src = imageUrl;
+
+            // Wait a moment, then add the 'printing' class to start the animation
+            setTimeout(() => {
+                printedPhoto.classList.add('printing');
+            }, 500); // 0.5 second delay before printing starts
+        }
+
+        // 3. Listen for the "printing" animation to finish
+        printedPhoto.addEventListener('transitionend', () => {
+            // Wait a little bit after the print finishes
+            setTimeout(() => {
+                // Mark this choice as printed and update indicators
+                if (currentChoiceKey) {
+                    printedChoices.add(currentChoiceKey);
+                    updatePrintedIndicators();
+                }
+                showFinalPicture();
+            }, 1000); // 1 second delay after printing
+        });
+
+        // 4. Show the final picture
+        function showFinalPicture() {
+            finalPhoto.src = chosenPictureUrl;
+            // Update message depending on the printed photo
+            const fallbackMessage = 'Un momento molto speciale di noi due!';
+            if (currentChoiceKey && messageDatabase[currentChoiceKey]) {
+                messageEl.textContent = messageDatabase[currentChoiceKey];
+            } else {
+                messageEl.textContent = fallbackMessage;
+            }
+            showScreen('final-photo-screen');
+        }
+
+        // 5. Reset the game
+        resetButton.addEventListener('click', () => {
+            // Reset the printer photo
+            printedPhoto.src = '';
+            printedPhoto.classList.remove('printing');
+            chosenPictureUrl = '';
+            
+            // Go back to the first screen
+            showScreen('card-screen');
+            // Ensure printed indicators are visible when selecting another card
+            updatePrintedIndicators();
+        });
+
+        // Helper: update printed state on cards
+        function updatePrintedIndicators() {
+            cards.forEach(card => {
+                const key = card.dataset.choice;
+                if (printedChoices.has(key)) {
+                    card.classList.add('printed');
+                } else {
+                    card.classList.remove('printed');
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
