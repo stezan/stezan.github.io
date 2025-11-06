@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Gioco di Compleanno per Irene 🎉</title>
+  <meta name="description" content="Un semplice gioco mobile per il compleanno di Irene: vinci un kit!" />
+  <style>
+    :root {
+      --bg: #0f1226;
+      --card: #171a35;
+      --text: #f5f7ff;
+      --muted: #c8cbe8;
+      --accent: #ff6ec7;
+      --accent-2: #7cf1a5;
+      --accent-3: #6ea8ff;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 800px at 70% -20%, #222858 0%, var(--bg) 60%);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      display: grid;
+      place-items: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 720px;
+      padding: 24px 16px 48px;
+    }
+
+    header { text-align: center; margin-bottom: 20px; }
+    h1 { margin: 8px 0 4px; font-size: clamp(26px, 6vw, 36px); }
+    p.sub { margin: 0; color: var(--muted); font-size: clamp(14px, 3.6vw, 16px); }
+
+    .card {
+      background: linear-gradient(180deg, #1b1f45 0%, var(--card) 100%);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px var(--shadow);
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .kits {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 460px) {
+      .kits { gap: 8px; }
+    }
+
+    .kit {
+      display: grid;
+      place-items: center;
+      padding: 16px 8px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+      user-select: none;
+      min-height: 110px;
+    }
+    .kit .emoji { font-size: clamp(32px, 9vw, 44px); }
+    .kit .name { margin-top: 6px; font-size: 14px; color: var(--muted); text-align: center; }
+    .kit.highlight {
+      background: rgba(124, 241, 165, 0.12);
+      border-color: rgba(124, 241, 165, 0.5);
+      transform: translateY(-2px) scale(1.02);
+      animation: pulse 900ms ease-in-out 2;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(124, 241, 165, 0.0); }
+      50% { box-shadow: 0 0 0 12px rgba(124, 241, 165, 0.12); }
+    }
+
+    .controls { display: grid; gap: 10px; margin-top: 16px; }
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      background: linear-gradient(90deg, var(--accent) 0%, #ff9d6c 100%);
+      color: #0e0e15;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+      box-shadow: 0 10px 24px rgba(255, 110, 199, 0.3);
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .btn:active { transform: translateY(1px) scale(0.99); filter: brightness(0.95); }
+    .btn.secondary {
+      background: linear-gradient(90deg, var(--accent-3) 0%, var(--accent-2) 100%);
+      box-shadow: 0 10px 24px rgba(110, 168, 255, 0.28);
+    }
+    .hint { text-align: center; color: var(--muted); font-size: 13px; }
+
+    .result {
+      margin-top: 16px;
+      text-align: center;
+      min-height: 58px;
+    }
+    .result h2 { margin: 0; font-size: clamp(20px, 5vw, 26px); }
+    .result p { margin: 4px 0 0; color: var(--muted); }
+
+    .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+    .confetti-piece {
+      position: absolute;
+      width: 10px; height: 18px;
+      opacity: 0.9;
+      top: -30px;
+      border-radius: 2px;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(720deg); opacity: 1; }
+    }
+
+    footer { text-align: center; margin-top: 18px; color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Gioco di compleanno per Irene">
+    <header>
+      <div style="font-size: 28px">🎂🎈</div>
+      <h1>Buon compleanno, Irene!</h1>
+      <p class="sub">Gioca e scopri il tuo regalo 🎁</p>
+    </header>
+
+    <section class="card" aria-live="polite">
+      <div class="kits" id="kits">
+        <div class="kit" data-kit="palestra" aria-label="Kit Palestra">
+          <div class="emoji" aria-hidden="true">🏋️‍♀️</div>
+          <div class="name">Kit Palestra</div>
+        </div>
+        <div class="kit" data-kit="capelli" aria-label="Kit Capelli">
+          <div class="emoji" aria-hidden="true">💇‍♀️</div>
+          <div class="name">Kit Capelli</div>
+        </div>
+        <div class="kit" data-kit="viso" aria-label="Kit Viso">
+          <div class="emoji" aria-hidden="true">🧖‍♀️</div>
+          <div class="name">Kit Viso</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="playBtn" class="btn" aria-label="Gioca e scopri il premio">Gioca!</button>
+        <button id="againBtn" class="btn secondary" style="display:none" aria-label="Gioca di nuovo">Gioca di nuovo</button>
+        <div class="hint">Ogni kit ha la stessa probabilità di uscire.</div>
+      </div>
+
+      <div class="result" id="result">
+        <h2 id="title">Sei pronta?</h2>
+        <p id="desc">Tocca "Gioca!" per scoprire il tuo premio.</p>
+      </div>
+    </section>
+
+    <footer>
+      Un super bacione! A presto! <br>  <br> Sandra e Stefano ✨
+    </footer>
+  </div>
+
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <script>
+    (function() {
+      const playBtn = document.getElementById('playBtn');
+      const againBtn = document.getElementById('againBtn');
+      const titleEl = document.getElementById('title');
+      const descEl = document.getElementById('desc');
+      const confettiRoot = document.getElementById('confetti');
+      const kitEls = Array.from(document.querySelectorAll('.kit'));
+
+      const prizes = [
+        { id: 'palestra', label: 'Kit Palestra', emoji: '🏋️‍♀️' },
+        { id: 'capelli', label: 'Kit Capelli', emoji: '💇‍♀️' },
+        { id: 'viso', label: 'Kit Viso', emoji: '🧖‍♀️' }
+      ];
+
+      function uniformRandomIndex(n) {
+        return Math.floor(Math.random() * n);
+      }
+
+      function setStateIdle() {
+        kitEls.forEach(el => el.classList.remove('highlight'));
+        titleEl.textContent = 'Sei pronta?';
+        descEl.textContent = 'Tocca "Gioca!" per scoprire il tuo premio.';
+        playBtn.style.display = '';
+        againBtn.style.display = 'none';
+      }
+
+      function setStateWon(prize) {
+        const highlight = document.querySelector('.kit[data-kit="' + prize.id + '"]');
+        if (highlight) highlight.classList.add('highlight');
+        titleEl.textContent = 'Hai vinto: ' + prize.label + ' ' + prize.emoji + '!';
+        descEl.textContent = 'Vuoi riprovare?';
+        playBtn.style.display = 'none';
+        againBtn.style.display = '';
+      }
+
+      function celebrate() {
+        const colors = ['#ff6ec7', '#7cf1a5', '#6ea8ff', '#ffd66e', '#ff8fab'];
+        const count = 120;
+        const duration = 1800 + Math.random() * 800;
+        for (let i = 0; i < count; i++) {
+          const piece = document.createElement('div');
+          piece.className = 'confetti-piece';
+          piece.style.left = Math.random() * 100 + 'vw';
+          piece.style.background = colors[i % colors.length];
+          piece.style.transform = 'translateY(-30px) rotate(' + (Math.random() * 360) + 'deg)';
+          piece.style.animationDuration = (duration / 1000 + Math.random() * 0.8) + 's';
+          piece.style.animationDelay = (Math.random() * 0.2) + 's';
+          piece.style.width = (6 + Math.random() * 8) + 'px';
+          piece.style.height = (10 + Math.random() * 14) + 'px';
+          confettiRoot.appendChild(piece);
+          setTimeout(() => piece.remove(), duration + 1500);
+        }
+      }
+
+      function play() {
+        kitEls.forEach(el => el.classList.remove('highlight'));
+        titleEl.textContent = 'Estrazione in corso…';
+        descEl.textContent = 'Incrocia le dita!';
+
+        // Piccola animazione di "shuffle"
+        let ticks = 0;
+        const maxTicks = 30;
+        const interval = setInterval(() => {
+          kitEls.forEach(el => el.classList.remove('highlight'));
+          const idx = uniformRandomIndex(prizes.length);
+          const temp = document.querySelector('.kit[data-kit="' + prizes[idx].id + '"]');
+          if (temp) temp.classList.add('highlight');
+          ticks++;
+          if (ticks >= maxTicks) {
+            clearInterval(interval);
+            const finalIndex = uniformRandomIndex(prizes.length);
+            const prize = prizes[finalIndex];
+            kitEls.forEach(el => el.classList.remove('highlight'));
+            setStateWon(prize);
+            celebrate();
+          }
+        }, 100);
+      }
+
+      playBtn.addEventListener('click', play);
+      againBtn.addEventListener('click', setStateIdle);
+
+      // Accessibilità: consenti invio da tastiera sui box (non necessario per il gioco ma carino)
+      kitEls.forEach(el => {
+        el.setAttribute('tabindex', '0');
+        el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            play();
+          }
+        });
+      });
+
+      setStateIdle();
+    })();
+  </script>
+</body>
+</html>
+
+
