@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Marcelita ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --romance: #d63031;
+            --dark: #2d3436;
+            --gold: #b2bec3;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #fffaf0;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--romance);
+            margin-bottom: 10px;
+        }
+
+        p.intro {
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        #countdown {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .time-box {
+            background: white;
+            padding: 15px 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 60px;
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .hints {
+            background: #fdf2f2;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px dashed var(--romance);
+        }
+
+        .hints h3 {
+            font-size: 1rem;
+            margin-top: 0;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        li {
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        #reveal-zone {
+            display: none;
+            animation: fadeIn 2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .btn-map {
+            background: var(--romance);
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="countdown-screen">
+            <h1>Hola, Marcelita ❤️</h1>
+            <p class="intro">Nuestra cita de San Valentín comienza en:</p>
+            
+            <div id="countdown">
+                <div class="time-box"><span id="days">00</span><div class="label">Días</div></div>
+                <div class="time-box"><span id="hours">00</span><div class="label">Horas</div></div>
+                <div class="time-box"><span id="minutes">00</span><div class="label">Min.</div></div>
+                <div class="time-box"><span id="seconds">00</span><div class="label">Seg.</div></div>
+            </div>
+
+            <div class="hints">
+                <h3>Pistas del lugar:</h3>
+                <ul>
+                    <li>🍣 Un arte que se come pieza a pieza.</li>
+                    <li>📍 En el corazón de l'Eixample, en una calle con mucho encanto.</li>
+                    <li>🎨 El nombre suena a algo que se construye... o a un refugio.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="reveal-zone">
+            <h1>¡Sorpresa! 🥂</h1>
+            <p>Nos vemos en <strong>Arko Sushi</strong></p>
+            <p>Carrer d'Enric Granados, 63, Barcelona</p>
+            <a href="https://www.google.com/maps/search/?api=1&query=Arko+Sushi+Enric+Granados+63+Barcelona" class="btn-map">Ver ubicación</a>
+        </div>
+    </div>
+
+    <script>
+        // Fecha objetivo: 13 de febrero a las 18:00 (Madrid)
+        // Nota: El mes en JS es 0-index (Enero = 0, Febrero = 1)
+        const targetDate = new Date(2026, 1, 13, 18, 0, 0).getTime();
+
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("countdown-screen").style.display = "none";
+                document.getElementById("reveal-zone").style.display = "block";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
