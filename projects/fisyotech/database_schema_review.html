@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyFisyoTech — Schema Database</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --primary: #2563eb;
+    --primary-light: #dbeafe;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --accent-green: #16a34a;
+    --accent-orange: #ea580c;
+    --accent-red: #dc2626;
+    --accent-purple: #7c3aed;
+    --tag-bg: #f1f5f9;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,.1);
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+
+  header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: .25rem; }
+  header p { font-size: .9rem; opacity: .85; }
+
+  .toolbar {
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .toolbar input[type="search"] {
+    padding: .5rem 1rem;
+    border: none;
+    border-radius: 999px;
+    width: 280px;
+    font-size: .9rem;
+    outline: none;
+  }
+
+  .toolbar button {
+    padding: .4rem .9rem;
+    border: 2px solid rgba(255,255,255,.4);
+    background: transparent;
+    color: white;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: .8rem;
+    font-weight: 600;
+    transition: all .2s;
+  }
+
+  .toolbar button:hover, .toolbar button.active {
+    background: white;
+    color: var(--primary);
+    border-color: white;
+  }
+
+  .stats {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: .75rem;
+    font-size: .8rem;
+    opacity: .85;
+  }
+
+  .stats span { font-weight: 600; }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 2rem 0 1rem;
+    padding-bottom: .5rem;
+    border-bottom: 2px solid var(--primary-light);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .section-title .icon { font-size: 1.3rem; }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: box-shadow .2s;
+  }
+
+  .card:hover { box-shadow: var(--shadow-lg); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .85rem 1.25rem;
+    cursor: pointer;
+    user-select: none;
+    gap: 1rem;
+  }
+
+  .card-header:hover { background: var(--tag-bg); }
+
+  .card-header .left {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 0;
+  }
+
+  .table-name {
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .table-desc {
+    font-size: .82rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .badges { display: flex; gap: .4rem; flex-shrink: 0; }
+
+  .badge {
+    font-size: .7rem;
+    padding: .15rem .5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .badge-cols { background: var(--primary-light); color: var(--primary); }
+  .badge-fk { background: #fef3c7; color: #92400e; }
+
+  .chevron {
+    width: 20px;
+    height: 20px;
+    transition: transform .25s;
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+
+  .card.open .chevron { transform: rotate(180deg); }
+
+  .card-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .card.open .card-body { display: block; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+  }
+
+  thead th {
+    text-align: left;
+    padding: .6rem 1rem;
+    background: var(--tag-bg);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: .55rem 1rem;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:hover { background: #f8fafc; }
+
+  .col-name {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-weight: 600;
+    font-size: .82rem;
+    color: var(--text);
+  }
+
+  .col-type {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: .8rem;
+    color: var(--accent-purple);
+  }
+
+  .constraint-tag {
+    display: inline-block;
+    font-size: .65rem;
+    padding: .1rem .4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-right: .25rem;
+    margin-bottom: .15rem;
+    white-space: nowrap;
+  }
+
+  .tag-pk { background: #fef3c7; color: #92400e; }
+  .tag-fk { background: #dbeafe; color: #1e40af; }
+  .tag-nn { background: #dcfce7; color: #166534; }
+  .tag-uq { background: #f3e8ff; color: #6b21a8; }
+  .tag-ck { background: #ffe4e6; color: #9f1239; }
+  .tag-df { background: #f1f5f9; color: #475569; }
+
+  .col-note {
+    font-size: .8rem;
+    color: var(--text-muted);
+    max-width: 280px;
+  }
+
+  .fk-ref {
+    font-size: .75rem;
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+
+  .fk-ref:hover { color: var(--accent-green); }
+
+  .toc {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .toc h2 {
+    font-size: 1rem;
+    margin-bottom: .75rem;
+    color: var(--text);
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: .4rem;
+  }
+
+  .toc-grid a {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: .85rem;
+    padding: .3rem .5rem;
+    border-radius: 6px;
+    transition: background .15s;
+  }
+
+  .toc-grid a:hover { background: var(--primary-light); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 700px) {
+    main { padding: 1rem .75rem; }
+    .toolbar input[type="search"] { width: 100%; }
+    thead th, tbody td { padding: .4rem .6rem; }
+    .table-desc { display: none; }
+    .col-note { max-width: 150px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MyFisyoTech — Schema del Database</h1>
+  <p>Revisione delle entità e dei campi per ogni tabella</p>
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Cerca tabella o campo..." autocomplete="off">
+    <button data-filter="all" class="active">Tutte</button>
+    <button data-filter="auth">Autenticazione</button>
+    <button data-filter="sport">Sport</button>
+    <button data-filter="body">Corpo & Infortuni</button>
+    <button data-filter="rehab">Riabilitazione</button>
+    <button data-filter="prev">Prevenzione</button>
+    <button data-filter="train">Allenamenti</button>
+    <button data-filter="other">Altro</button>
+  </div>
+  <div class="stats">
+    <div><span id="totalTables">0</span> tabelle</div>
+    <div><span id="totalCols">0</span> colonne totali</div>
+    <div><span id="visibleCount">0</span> visibili</div>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<script>
+const schema = [
+  // ── 1. Auth & Users ──
+  {
+    section: "Autenticazione & Utenti",
+    icon: "🔐",
+    filter: "auth",
+    tables: [
+      {
+        name: "users",
+        desc: "Profilo pubblico degli utenti (estensione di auth.users di Supabase)",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, note: "Specchia auth.users(id), impostato alla registrazione" },
+          { name: "email", type: "VARCHAR(255)", nn: true, uq: true, note: "Denormalizzato da auth.users" },
+          { name: "role", type: "VARCHAR(30)", nn: true, ck: "'athlete','staff','society','admin'", note: "Ruolo dell'utente nell'app" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      },
+      {
+        name: "societies",
+        desc: "Società sportive — il cliente B2B",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "user_id", type: "UUID", nn: true, fk: "users(id)", note: "Utente proprietario della società" },
+          { name: "name", type: "VARCHAR(255)", nn: true, note: "Nome della società" },
+          { name: "official_email", type: "VARCHAR(255)", nn: true, note: "Email ufficiale" },
+          { name: "phone", type: "VARCHAR(30)", note: "Telefono" },
+          { name: "president_name", type: "VARCHAR(255)", note: "Nome del presidente" },
+          { name: "sport", type: "VARCHAR(100)", note: "Es. 'football'" },
+          { name: "city", type: "VARCHAR(100)", note: "Città" },
+          { name: "logo_url", type: "TEXT", note: "Path Supabase Storage per il logo" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      },
+      {
+        name: "staff_profiles",
+        desc: "Allenatori, vice-allenatori, preparatori, ecc.",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "user_id", type: "UUID", nn: true, fk: "users(id)", note: "Utente collegato" },
+          { name: "society_id", type: "UUID", nn: true, fk: "societies(id)", note: "Società di appartenenza" },
+          { name: "first_name", type: "VARCHAR(100)", nn: true, note: "Nome" },
+          { name: "last_name", type: "VARCHAR(100)", nn: true, note: "Cognome" },
+          { name: "phone", type: "VARCHAR(30)", note: "Telefono" },
+          { name: "role_label", type: "VARCHAR(100)", note: "Es. 'Allenatore', 'Vice', 'Preparatore'" },
+          { name: "date_of_birth", type: "DATE", note: "Data di nascita" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      },
+      {
+        name: "athlete_profiles",
+        desc: "Atleti — registrati dalla società o dallo staff",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "user_id", type: "UUID", nn: true, fk: "users(id)", note: "Utente collegato" },
+          { name: "society_id", type: "UUID", nn: true, fk: "societies(id)", note: "Società di appartenenza" },
+          { name: "first_name", type: "VARCHAR(100)", nn: true, note: "Nome" },
+          { name: "last_name", type: "VARCHAR(100)", nn: true, note: "Cognome" },
+          { name: "date_of_birth", type: "DATE", nn: true, note: "Data di nascita" },
+          { name: "phone", type: "VARCHAR(30)", note: "Telefono" },
+          { name: "dominant_foot", type: "VARCHAR(10)", ck: "'left','right','both'", note: "Piede dominante" },
+          { name: "avatar_url", type: "TEXT", note: "Path Supabase Storage per l'avatar" },
+          { name: "gdpr_consent", type: "BOOLEAN", nn: true, df: "FALSE", note: "Consenso GDPR" },
+          { name: "gdpr_consent_at", type: "TIMESTAMPTZ", note: "Data del consenso GDPR" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      },
+      {
+        name: "admin_profiles",
+        desc: "Amministratori interni del sistema",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "user_id", type: "UUID", nn: true, fk: "users(id)", note: "Utente collegato" },
+          { name: "first_name", type: "VARCHAR(100)", nn: true, note: "Nome" },
+          { name: "last_name", type: "VARCHAR(100)", nn: true, note: "Cognome" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      }
+    ]
+  },
+  // ── 2. Sport Structure ──
+  {
+    section: "Struttura Sportiva",
+    icon: "⚽",
+    filter: "sport",
+    tables: [
+      {
+        name: "championships",
+        desc: "Campionati e tornei",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "name", type: "VARCHAR(255)", nn: true, note: "Nome del campionato" },
+          { name: "sport", type: "VARCHAR(100)", nn: true, df: "'football'", note: "Tipo di sport" },
+          { name: "level", type: "VARCHAR(100)", note: "Es. 'Regionale', 'Provinciale'" },
+          { name: "season", type: "VARCHAR(20)", nn: true, note: "Es. '2025-2026'" },
+          { name: "start_date", type: "DATE", note: "Data inizio" },
+          { name: "end_date", type: "DATE", note: "Data fine" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "teams",
+        desc: "Squadre della società",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "society_id", type: "UUID", nn: true, fk: "societies(id)", note: "Società proprietaria" },
+          { name: "championship_id", type: "UUID", fk: "championships(id)", note: "Campionato associato" },
+          { name: "name", type: "VARCHAR(255)", nn: true, note: "Es. 'Prima Squadra', 'Under 17'" },
+          { name: "category", type: "VARCHAR(100)", note: "Categoria" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      },
+      {
+        name: "team_athlete_memberships",
+        desc: "Associazione atleti ↔ squadre (molti-a-molti)",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "team_id", type: "UUID", nn: true, fk: "teams(id)", note: "Squadra" },
+          { name: "athlete_id", type: "UUID", nn: true, fk: "athlete_profiles(id)", note: "Atleta" },
+          { name: "jersey_number", type: "SMALLINT", note: "Numero di maglia" },
+          { name: "position", type: "VARCHAR(50)", note: "Posizione in campo" },
+          { name: "joined_at", type: "DATE", note: "Data di ingresso" },
+          { name: "left_at", type: "DATE", note: "Data di uscita" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ],
+        unique: ["team_id + athlete_id"]
+      },
+      {
+        name: "team_staff_assignments",
+        desc: "Associazione staff ↔ squadre (molti-a-molti)",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "team_id", type: "UUID", nn: true, fk: "teams(id)", note: "Squadra" },
+          { name: "staff_id", type: "UUID", nn: true, fk: "staff_profiles(id)", note: "Membro dello staff" },
+          { name: "role_in_team", type: "VARCHAR(100)", note: "Es. 'Allenatore principale'" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ],
+        unique: ["team_id + staff_id"]
+      }
+    ]
+  },
+  // ── 3. Body Map & Injury Taxonomy ──
+  {
+    section: "Mappa Corporea & Tassonomia Infortuni",
+    icon: "🦴",
+    filter: "body",
+    tables: [
+      {
+        name: "body_regions",
+        desc: "Regioni anatomiche (spalla, ginocchio, caviglia, …)",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "name", type: "VARCHAR(100)", nn: true, note: "Nome della regione anatomica" },
+          { name: "side", type: "VARCHAR(10)", ck: "'left','right','bilateral','none'", note: "Lato del corpo" },
+          { name: "parent_id", type: "UUID", fk: "body_regions(id)", note: "Per sotto-regioni (auto-riferimento)" },
+          { name: "display_order", type: "SMALLINT", nn: true, df: "0", note: "Ordine di visualizzazione" },
+          { name: "svg_zone_id", type: "VARCHAR(50)", note: "ID zona SVG nella mappa corporea" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "injury_types",
+        desc: "Catalogo master delle diagnosi di infortunio",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "body_region_id", type: "UUID", nn: true, fk: "body_regions(id)", note: "Regione corporea associata" },
+          { name: "name", type: "VARCHAR(255)", nn: true, note: "Nome del tipo di infortunio" },
+          { name: "category", type: "VARCHAR(50)", ck: "'trauma','non_trauma','overload'", note: "Categoria" },
+          { name: "severity_levels", type: "JSONB", note: "Es. {\"I\": \"lieve\", \"II\": \"moderata\", \"III\": \"grave\"}" },
+          { name: "avg_recovery_days", type: "SMALLINT", note: "Giorni medi di recupero (da letteratura)" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      }
+    ]
+  },
+  // ── 4. Injury Assessment Flow ──
+  {
+    section: "Flusso di Valutazione Infortuni",
+    icon: "🩺",
+    filter: "body",
+    tables: [
+      {
+        name: "assessment_flow_nodes",
+        desc: "Nodi (domande / schermate informative) nel flusso diagnostico guidato",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "node_type", type: "VARCHAR(30)", nn: true, ck: "'question','info','result'", note: "Tipo di nodo" },
+          { name: "title", type: "TEXT", nn: true, note: "Titolo/domanda" },
+          { name: "body_region_id", type: "UUID", fk: "body_regions(id)", note: "Regione corporea associata" },
+          { name: "video_url", type: "TEXT", note: "URL video esplicativo" },
+          { name: "display_order", type: "SMALLINT", nn: true, df: "0", note: "Ordine di visualizzazione" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "assessment_flow_options",
+        desc: "Risposte/scelte possibili per ogni nodo domanda",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "node_id", type: "UUID", nn: true, fk: "assessment_flow_nodes(id)", note: "Nodo di appartenenza" },
+          { name: "label", type: "TEXT", nn: true, note: "Testo della risposta" },
+          { name: "next_node_id", type: "UUID", fk: "assessment_flow_nodes(id)", note: "Nodo successivo" },
+          { name: "result_injury_type_id", type: "UUID", fk: "injury_types(id)", note: "Risultato finale (tipo infortunio)" },
+          { name: "requires_physio", type: "BOOLEAN", nn: true, df: "FALSE", note: "Se vero → rinvio al fisioterapista" },
+          { name: "display_order", type: "SMALLINT", nn: true, df: "0", note: "Ordine di visualizzazione" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "athlete_assessment_sessions",
+        desc: "Una riga per ogni volta che un atleta completa il flusso di valutazione",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "athlete_id", type: "UUID", nn: true, fk: "athlete_profiles(id)", note: "Atleta" },
+          { name: "started_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()", note: "Inizio sessione" },
+          { name: "completed_at", type: "TIMESTAMPTZ", note: "Fine sessione" },
+          { name: "outcome", type: "VARCHAR(30)", ck: "'injury_logged','refer_physio','no_injury','abandoned'", note: "Esito della valutazione" },
+          { name: "resulting_injury_id", type: "UUID", note: "FK impostata dopo la creazione dell'infortunio" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "athlete_assessment_answers",
+        desc: "Ogni risposta data durante una sessione di valutazione",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "session_id", type: "UUID", nn: true, fk: "athlete_assessment_sessions(id)", note: "Sessione di valutazione" },
+          { name: "node_id", type: "UUID", nn: true, fk: "assessment_flow_nodes(id)", note: "Nodo della domanda" },
+          { name: "option_id", type: "UUID", nn: true, fk: "assessment_flow_options(id)", note: "Opzione scelta" },
+          { name: "answered_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()", note: "Data/ora risposta" }
+        ]
+      }
+    ]
+  },
+  // ── 5. Injuries ──
+  {
+    section: "Infortuni (Atleta)",
+    icon: "🏥",
+    filter: "body",
+    tables: [
+      {
+        name: "injuries",
+        desc: "Registro centrale degli infortuni — creato dal flusso o manualmente",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "athlete_id", type: "UUID", nn: true, fk: "athlete_profiles(id)", note: "Atleta infortunato" },
+          { name: "injury_type_id", type: "UUID", nn: true, fk: "injury_types(id)", note: "Tipo di infortunio" },
+          { name: "body_region_id", type: "UUID", nn: true, fk: "body_regions(id)", note: "Regione corporea" },
+          { name: "severity", type: "VARCHAR(20)", ck: "'grade_1','grade_2','grade_3','unknown'", note: "Gravità" },
+          { name: "origin", type: "VARCHAR(20)", nn: true, ck: "'flow','manual','staff_entry'", note: "Origine della registrazione" },
+          { name: "assessment_session_id", type: "UUID", fk: "athlete_assessment_sessions(id)", note: "Sessione di valutazione collegata" },
+          { name: "injury_date", type: "DATE", nn: true, note: "Data dell'infortunio" },
+          { name: "expected_return_date", type: "DATE", note: "Data prevista di rientro" },
+          { name: "actual_return_date", type: "DATE", note: "Data effettiva di rientro" },
+          { name: "recovery_percentage", type: "SMALLINT", nn: true, df: "0", ck: "0–100", note: "Percentuale di recupero" },
+          { name: "managing_staff_id", type: "UUID", fk: "staff_profiles(id)", note: "Staff che gestisce l'infortunio" },
+          { name: "notes", type: "TEXT", note: "Note libere" },
+          { name: "status", type: "VARCHAR(20)", nn: true, df: "'active'", ck: "'active','recovering','resolved','chronic'", note: "Stato corrente" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      },
+      {
+        name: "injury_recovery_checkpoints",
+        desc: "Snapshot periodici della percentuale di recupero (per grafici temporali)",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "injury_id", type: "UUID", nn: true, fk: "injuries(id)", note: "Infortunio collegato" },
+          { name: "recorded_at", type: "DATE", nn: true, df: "CURRENT_DATE", note: "Data della registrazione" },
+          { name: "recovery_percentage", type: "SMALLINT", nn: true, ck: "0–100", note: "Percentuale di recupero" },
+          { name: "notes", type: "TEXT", note: "Note" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      }
+    ]
+  },
+  // ── 6. Equipment, Exercises & Media ──
+  {
+    section: "Attrezzature, Esercizi & Media",
+    icon: "🏋️",
+    filter: "rehab",
+    tables: [
+      {
+        name: "equipment",
+        desc: "Lista master delle attrezzature fisiche",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "name", type: "VARCHAR(100)", nn: true, uq: true, note: "Es. 'Elastico', 'Pallone', 'Step'" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "exercise_categories",
+        desc: "Raggruppamento logico (Stretching, Rinforzo, Propriocezione, …)",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "name", type: "VARCHAR(100)", nn: true, note: "Nome della categoria" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "exercises",
+        desc: "Libreria master di tutti gli esercizi",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "category_id", type: "UUID", fk: "exercise_categories(id)", note: "Categoria dell'esercizio" },
+          { name: "body_region_id", type: "UUID", fk: "body_regions(id)", note: "Regione corporea interessata" },
+          { name: "name", type: "VARCHAR(255)", nn: true, note: "Nome dell'esercizio" },
+          { name: "description", type: "TEXT", note: "Descrizione" },
+          { name: "difficulty", type: "VARCHAR(20)", ck: "'easy','medium','hard'", note: "Difficoltà" },
+          { name: "equipment_ids", type: "UUID[]", nn: true, df: "'{}'", note: "Array di ID attrezzature (rif. equipment)" },
+          { name: "media", type: "JSONB", nn: true, df: "'[]'", note: "Array di {url, type, thumbnail_url}" },
+          { name: "created_by_admin_id", type: "UUID", fk: "admin_profiles(id)", note: "Admin che ha creato l'esercizio" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      }
+    ]
+  },
+  // ── 7. Rehabilitation Programs ──
+  {
+    section: "Programmi di Riabilitazione",
+    icon: "💪",
+    filter: "rehab",
+    tables: [
+      {
+        name: "rehabilitation_programs",
+        desc: "Programmi strutturati definiti dagli admin, legati ai tipi di infortunio",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "injury_type_id", type: "UUID", nn: true, fk: "injury_types(id)", note: "Tipo di infortunio associato" },
+          { name: "name", type: "VARCHAR(255)", nn: true, note: "Nome del programma" },
+          { name: "description", type: "TEXT", note: "Descrizione" },
+          { name: "total_duration_days", type: "SMALLINT", note: "Durata totale in giorni" },
+          { name: "phase", type: "VARCHAR(30)", ck: "'acute','sub_acute','functional','return_to_sport'", note: "Fase del recupero" },
+          { name: "source_reference", type: "TEXT", note: "Riferimento alla letteratura scientifica" },
+          { name: "created_by_admin_id", type: "UUID", fk: "admin_profiles(id)", note: "Admin creatore" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      },
+      {
+        name: "rehabilitation_program_exercises",
+        desc: "Lista ordinata degli esercizi all'interno di un programma",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "program_id", type: "UUID", nn: true, fk: "rehabilitation_programs(id)", note: "Programma di appartenenza" },
+          { name: "exercise_id", type: "UUID", nn: true, fk: "exercises(id)", note: "Esercizio" },
+          { name: "day_number", type: "SMALLINT", nn: true, note: "Giorno del programma" },
+          { name: "sets", type: "SMALLINT", note: "Numero di serie" },
+          { name: "reps", type: "SMALLINT", note: "Numero di ripetizioni" },
+          { name: "duration_secs", type: "SMALLINT", note: "Durata in secondi" },
+          { name: "rest_secs", type: "SMALLINT", note: "Pausa in secondi" },
+          { name: "notes", type: "TEXT", note: "Note" },
+          { name: "display_order", type: "SMALLINT", nn: true, df: "0", note: "Ordine di visualizzazione" }
+        ],
+        unique: ["program_id + exercise_id + day_number"]
+      },
+      {
+        name: "athlete_rehabilitation_assignments",
+        desc: "Assegnazione di un programma riabilitativo a un infortunio dell'atleta",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "injury_id", type: "UUID", nn: true, fk: "injuries(id)", note: "Infortunio" },
+          { name: "program_id", type: "UUID", nn: true, fk: "rehabilitation_programs(id)", note: "Programma assegnato" },
+          { name: "assigned_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()", note: "Data assegnazione" },
+          { name: "assigned_by_staff_id", type: "UUID", fk: "staff_profiles(id)", note: "Staff che ha assegnato" },
+          { name: "start_date", type: "DATE", nn: true, note: "Data inizio" },
+          { name: "end_date", type: "DATE", note: "Data fine prevista" },
+          { name: "is_active", type: "BOOLEAN", nn: true, df: "TRUE", note: "Se ancora attivo" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "athlete_exercise_logs",
+        desc: "Registro giornaliero degli esercizi completati dall'atleta",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "assignment_id", type: "UUID", nn: true, fk: "athlete_rehabilitation_assignments(id)", note: "Assegnazione riabilitativa" },
+          { name: "exercise_id", type: "UUID", nn: true, fk: "exercises(id)", note: "Esercizio svolto" },
+          { name: "logged_date", type: "DATE", nn: true, df: "CURRENT_DATE", note: "Data di registrazione" },
+          { name: "sets_completed", type: "SMALLINT", note: "Serie completate" },
+          { name: "reps_completed", type: "SMALLINT", note: "Ripetizioni completate" },
+          { name: "duration_completed_secs", type: "SMALLINT", note: "Durata completata (secondi)" },
+          { name: "pain_level", type: "SMALLINT", ck: "0–10", note: "Livello di dolore (0=nessuno, 10=max)" },
+          { name: "athlete_notes", type: "TEXT", note: "Note dell'atleta" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      }
+    ]
+  },
+  // ── 8. Prevention Programs ──
+  {
+    section: "Programmi di Prevenzione",
+    icon: "🛡️",
+    filter: "prev",
+    tables: [
+      {
+        name: "prevention_programs",
+        desc: "Protocolli preventivi (es. FIFA 11+, specifici per regione corporea)",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "name", type: "VARCHAR(255)", nn: true, note: "Nome del programma" },
+          { name: "description", type: "TEXT", note: "Descrizione" },
+          { name: "body_region_id", type: "UUID", fk: "body_regions(id)", note: "Regione corporea (NULL = generico)" },
+          { name: "injury_type_id", type: "UUID", fk: "injury_types(id)", note: "Tipo infortunio (NULL = generico)" },
+          { name: "season_window_start", type: "VARCHAR(10)", note: "Inizio finestra stagionale (es. 'gennaio')" },
+          { name: "season_window_end", type: "VARCHAR(10)", note: "Fine finestra stagionale (es. 'agosto')" },
+          { name: "source_reference", type: "TEXT", note: "Riferimento letteratura scientifica" },
+          { name: "created_by_admin_id", type: "UUID", fk: "admin_profiles(id)", note: "Admin creatore" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      },
+      {
+        name: "prevention_program_exercises",
+        desc: "Esercizi all'interno di un protocollo preventivo",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "prevention_id", type: "UUID", nn: true, fk: "prevention_programs(id)", note: "Programma di prevenzione" },
+          { name: "exercise_id", type: "UUID", nn: true, fk: "exercises(id)", note: "Esercizio" },
+          { name: "sets", type: "SMALLINT", note: "Serie" },
+          { name: "reps", type: "SMALLINT", note: "Ripetizioni" },
+          { name: "duration_secs", type: "SMALLINT", note: "Durata in secondi" },
+          { name: "day_label", type: "VARCHAR(50)", note: "Es. 'Giorno 1', 'Pre-partita'" },
+          { name: "display_order", type: "SMALLINT", nn: true, df: "0", note: "Ordine di visualizzazione" }
+        ],
+        unique: ["prevention_id + exercise_id + day_label"]
+      },
+      {
+        name: "athlete_prevention_assignments",
+        desc: "Assegnazione di un programma preventivo a un atleta",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "athlete_id", type: "UUID", nn: true, fk: "athlete_profiles(id)", note: "Atleta" },
+          { name: "prevention_id", type: "UUID", nn: true, fk: "prevention_programs(id)", note: "Programma di prevenzione" },
+          { name: "assigned_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()", note: "Data assegnazione" },
+          { name: "start_date", type: "DATE", nn: true, note: "Data inizio" },
+          { name: "is_active", type: "BOOLEAN", nn: true, df: "TRUE", note: "Se ancora attivo" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "team_prevention_assignments",
+        desc: "Assegnazione di un programma preventivo a un'intera squadra",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "team_id", type: "UUID", nn: true, fk: "teams(id)", note: "Squadra" },
+          { name: "prevention_id", type: "UUID", nn: true, fk: "prevention_programs(id)", note: "Programma di prevenzione" },
+          { name: "assigned_by_staff_id", type: "UUID", fk: "staff_profiles(id)", note: "Staff che ha assegnato" },
+          { name: "assigned_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()", note: "Data assegnazione" },
+          { name: "start_date", type: "DATE", nn: true, note: "Data inizio" },
+          { name: "is_active", type: "BOOLEAN", nn: true, df: "TRUE", note: "Se ancora attivo" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      }
+    ]
+  },
+  // ── 9. Training Sessions ──
+  {
+    section: "Sessioni di Allenamento",
+    icon: "📋",
+    filter: "train",
+    tables: [
+      {
+        name: "field_types",
+        desc: "Tipi di superficie di gioco",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "name", type: "VARCHAR(50)", nn: true, note: "Es. 'Erba naturale', 'Sintetico', 'Indoor'" }
+        ]
+      },
+      {
+        name: "training_sessions",
+        desc: "Ogni sessione di allenamento o partita registrata dallo staff",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "team_id", type: "UUID", nn: true, fk: "teams(id)", note: "Squadra" },
+          { name: "created_by_staff_id", type: "UUID", nn: true, fk: "staff_profiles(id)", note: "Staff che ha registrato" },
+          { name: "session_type", type: "VARCHAR(20)", nn: true, ck: "'training','match','friendly','other'", note: "Tipo di sessione" },
+          { name: "field_type_id", type: "UUID", fk: "field_types(id)", note: "Tipo di campo" },
+          { name: "session_date", type: "DATE", nn: true, note: "Data della sessione" },
+          { name: "duration_minutes", type: "SMALLINT", note: "Durata in minuti" },
+          { name: "location", type: "VARCHAR(255)", note: "Luogo" },
+          { name: "notes", type: "TEXT", note: "Note" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "training_session_attendances",
+        desc: "Presenze e stato di disponibilità per atleta per sessione",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "session_id", type: "UUID", nn: true, fk: "training_sessions(id)", note: "Sessione" },
+          { name: "athlete_id", type: "UUID", nn: true, fk: "athlete_profiles(id)", note: "Atleta" },
+          { name: "status", type: "VARCHAR(20)", nn: true, ck: "'present','absent','injured','partial'", note: "Stato presenza" },
+          { name: "absence_reason", type: "VARCHAR(100)", note: "Motivo dell'assenza" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ],
+        unique: ["session_id + athlete_id"]
+      }
+    ]
+  },
+  // ── 10. Sideline ──
+  {
+    section: "Bordo Campo",
+    icon: "🎬",
+    filter: "other",
+    tables: [
+      {
+        name: "sideline_categories",
+        desc: "Categorie di contenuti per il bordo campo",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "name", type: "VARCHAR(100)", nn: true, note: "Es. 'Primo Soccorso', 'Fasciature', 'Trauma Cranico'" },
+          { name: "icon_url", type: "TEXT", note: "URL icona" },
+          { name: "display_order", type: "SMALLINT", nn: true, df: "0", note: "Ordine di visualizzazione" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "sideline_videos",
+        desc: "Video educativi disponibili a bordo campo",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "category_id", type: "UUID", nn: true, fk: "sideline_categories(id)", note: "Categoria" },
+          { name: "body_region_id", type: "UUID", fk: "body_regions(id)", note: "Regione corporea" },
+          { name: "injury_type_id", type: "UUID", fk: "injury_types(id)", note: "Tipo infortunio" },
+          { name: "title", type: "VARCHAR(255)", nn: true, note: "Titolo del video" },
+          { name: "description", type: "TEXT", note: "Descrizione" },
+          { name: "video_url", type: "TEXT", nn: true, note: "URL del video (Supabase Storage)" },
+          { name: "thumbnail_url", type: "TEXT", note: "URL miniatura" },
+          { name: "duration_secs", type: "SMALLINT", note: "Durata in secondi" },
+          { name: "display_order", type: "SMALLINT", nn: true, df: "0", note: "Ordine di visualizzazione" },
+          { name: "target_roles", type: "VARCHAR[]", nn: true, df: "['athlete','staff']", note: "Ruoli destinatari" },
+          { name: "created_by_admin_id", type: "UUID", fk: "admin_profiles(id)", note: "Admin creatore" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
+        ]
+      }
+    ]
+  },
+  // ── 11. Support Tickets ──
+  {
+    section: "Ticket di Supporto",
+    icon: "🎫",
+    filter: "other",
+    tables: [
+      {
+        name: "support_tickets",
+        desc: "Segnalazioni e richieste di supporto inviate dagli utenti all'admin",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "submitted_by_user_id", type: "UUID", nn: true, fk: "users(id)", note: "Utente che ha inviato il ticket" },
+          { name: "category", type: "VARCHAR(30)", ck: "'access_issue','exercise_error','data_error','general','other'", note: "Categoria del problema" },
+          { name: "subject", type: "VARCHAR(255)", nn: true, note: "Oggetto" },
+          { name: "body", type: "TEXT", nn: true, note: "Corpo del messaggio" },
+          { name: "status", type: "VARCHAR(20)", nn: true, df: "'open'", ck: "'open','in_progress','resolved','closed'", note: "Stato del ticket" },
+          { name: "resolved_by_admin_id", type: "UUID", fk: "admin_profiles(id)", note: "Admin che ha risolto" },
+          { name: "resolution_notes", type: "TEXT", note: "Note di risoluzione" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
+          { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      }
+    ]
+  },
+  // ── 12. Analytics ──
+  {
+    section: "Analisi & Log",
+    icon: "📊",
+    filter: "other",
+    tables: [
+      {
+        name: "user_activity_logs",
+        desc: "Log eventi leggero per analisi admin (DAU/MAU, utilizzo funzionalità) — partizionato per mese",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "user_id", type: "UUID", nn: true, fk: "users(id)", note: "Utente" },
+          { name: "event_name", type: "VARCHAR(100)", nn: true, note: "Es. 'open_flow', 'log_exercise', 'view_dashboard'" },
+          { name: "event_metadata", type: "JSONB", note: "Dati aggiuntivi sull'evento" },
+          { name: "platform", type: "VARCHAR(20)", ck: "'android','ios','web'", note: "Piattaforma" },
+          { name: "session_id", type: "UUID", note: "ID sessione utente" },
+          { name: "occurred_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()", note: "Data/ora dell'evento" }
+        ]
+      }
+    ]
+  }
+];
+
+function renderConstraints(col) {
+  let html = '';
+  if (col.pk)  html += '<span class="constraint-tag tag-pk">PK</span>';
+  if (col.fk)  html += '<span class="constraint-tag tag-fk">FK</span>';
+  if (col.nn)  html += '<span class="constraint-tag tag-nn">NOT NULL</span>';
+  if (col.uq)  html += '<span class="constraint-tag tag-uq">UNIQUE</span>';
+  if (col.ck)  html += `<span class="constraint-tag tag-ck">CHECK ${col.ck}</span>`;
+  if (col.df)  html += `<span class="constraint-tag tag-df">DEFAULT ${col.df}</span>`;
+  return html;
+}
+
+function renderFK(col) {
+  if (!col.fk) return '';
+  const tableName = col.fk.split('(')[0];
+  return `<span class="fk-ref" onclick="scrollToTable('${tableName}')" title="Vai a ${tableName}">→ ${col.fk}</span>`;
+}
+
+function countFK(cols) {
+  return cols.filter(c => c.fk).length;
+}
+
+function render() {
+  const main = document.getElementById('main');
+  let totalTables = 0, totalCols = 0;
+
+  // TOC
+  let tocHtml = '<div class="toc"><h2>Indice delle Tabelle</h2><div class="toc-grid">';
+  schema.forEach(s => {
+    s.tables.forEach(t => {
+      tocHtml += `<a href="#" onclick="scrollToTable('${t.name}');return false">${t.name}</a>`;
+    });
+  });
+  tocHtml += '</div></div>';
+
+  let html = tocHtml;
+
+  schema.forEach(section => {
+    html += `<div class="section-group" data-filter="${section.filter}">`;
+    html += `<div class="section-title"><span class="icon">${section.icon}</span> ${section.section}</div>`;
+    section.tables.forEach(table => {
+      totalTables++;
+      totalCols += table.columns.length;
+      const fkCount = countFK(table.columns);
+
+      html += `<div class="card" data-table="${table.name}" id="table-${table.name}">`;
+      html += `<div class="card-header" onclick="this.parentElement.classList.toggle('open')">`;
+      html += `<div class="left">`;
+      html += `<span class="table-name">${table.name}</span>`;
+      html += `<span class="table-desc">${table.desc}</span>`;
+      html += `</div>`;
+      html += `<div class="badges">`;
+      html += `<span class="badge badge-cols">${table.columns.length} colonne</span>`;
+      if (fkCount) html += `<span class="badge badge-fk">${fkCount} FK</span>`;
+      html += `</div>`;
+      html += `<svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>`;
+      html += `</div>`;
+
+      html += `<div class="card-body"><table><thead><tr>`;
+      html += `<th>Campo</th><th>Tipo</th><th>Vincoli</th><th>Riferimento</th><th>Descrizione</th>`;
+      html += `</tr></thead><tbody>`;
+
+      table.columns.forEach(col => {
+        html += `<tr>`;
+        html += `<td class="col-name">${col.name}</td>`;
+        html += `<td class="col-type">${col.type}</td>`;
+        html += `<td>${renderConstraints(col)}</td>`;
+        html += `<td>${renderFK(col)}</td>`;
+        html += `<td class="col-note">${col.note || ''}</td>`;
+        html += `</tr>`;
+      });
+
+      if (table.unique) {
+        table.unique.forEach(u => {
+          html += `<tr><td colspan="5" style="font-size:.8rem;color:var(--accent-purple);padding:.5rem 1rem;">⚡ Vincolo UNIQUE: <strong>${u}</strong></td></tr>`;
+        });
+      }
+
+      html += `</tbody></table></div></div>`;
+    });
+    html += `</div>`;
+  });
+
+  main.innerHTML = html;
+  document.getElementById('totalTables').textContent = totalTables;
+  document.getElementById('totalCols').textContent = totalCols;
+  document.getElementById('visibleCount').textContent = totalTables;
+}
+
+function scrollToTable(name) {
+  const el = document.getElementById('table-' + name);
+  if (!el) return;
+  el.classList.add('open');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  el.style.outline = '2px solid var(--primary)';
+  setTimeout(() => el.style.outline = '', 2000);
+}
+
+// Search
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.card');
+  let visible = 0;
+  cards.forEach(card => {
+    const match = !q || card.dataset.table.includes(q) || card.innerHTML.toLowerCase().includes(q);
+    card.classList.toggle('hidden', !match);
+    if (match) visible++;
+  });
+
+  document.querySelectorAll('.section-group').forEach(sg => {
+    const hasVisible = sg.querySelector('.card:not(.hidden)');
+    sg.classList.toggle('hidden', !hasVisible);
+  });
+
+  document.getElementById('visibleCount').textContent = visible;
+});
+
+// Filters
+document.querySelectorAll('.toolbar button').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const f = this.dataset.filter;
+    let visible = 0;
+
+    document.querySelectorAll('.section-group').forEach(sg => {
+      const match = f === 'all' || sg.dataset.filter === f;
+      sg.classList.toggle('hidden', !match);
+      if (match) sg.querySelectorAll('.card').forEach(c => { c.classList.remove('hidden'); visible++; });
+    });
+
+    document.getElementById('visibleCount').textContent = visible;
+    document.getElementById('search').value = '';
+  });
+});
+
+render();
+</script>
+</body>
+</html>
