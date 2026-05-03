@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MyFisyoTech — Schema Database</title>
+<title>Flooxy — Schema Database</title>
 <style>
   :root {
     --bg: #f5f7fa;
@@ -309,7 +309,7 @@
 <body>
 
 <header>
-  <h1>MyFisyoTech — Schema del Database</h1>
+  <h1>Flooxy — Schema del Database</h1>
   <p>Revisione delle entità e dei campi per ogni tabella</p>
   <div class="toolbar">
     <input type="search" id="search" placeholder="Cerca tabella o campo..." autocomplete="off">
@@ -320,6 +320,7 @@
     <button data-filter="rehab">Riabilitazione</button>
     <button data-filter="prev">Prevenzione</button>
     <button data-filter="train">Allenamenti</button>
+    <button data-filter="notif">Notifiche</button>
     <button data-filter="other">Altro</button>
   </div>
   <div class="stats">
@@ -362,7 +363,11 @@ const schema = [
           { name: "phone", type: "VARCHAR(30)", note: "Telefono" },
           { name: "president_name", type: "VARCHAR(255)", note: "Nome del presidente" },
           { name: "sport", type: "VARCHAR(100)", note: "Es. 'football'" },
-          { name: "city", type: "VARCHAR(100)", note: "Città" },
+          { name: "address_street", type: "VARCHAR(255)", note: "Via e numero civico" },
+          { name: "address_city", type: "VARCHAR(100)", note: "Città" },
+          { name: "address_province", type: "VARCHAR(10)", note: "Sigla provincia (2 lettere), es. 'MI'" },
+          { name: "address_postal_code", type: "VARCHAR(10)", note: "CAP, es. '20121'" },
+          { name: "address_country", type: "VARCHAR(100)", nn: true, df: "'Italia'", note: "Paese" },
           { name: "logo_url", type: "TEXT", note: "Path Supabase Storage per il logo" },
           { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
           { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
@@ -491,14 +496,14 @@ const schema = [
     tables: [
       {
         name: "body_regions",
-        desc: "Regioni anatomiche (spalla, ginocchio, caviglia, …)",
+        desc: "Gerarchia anatomica a 2 livelli: macro-zone (parent_id = NULL) e sotto-zone (parent_id impostato). Injury types si attaccano preferibilmente alle sotto-zone.",
         columns: [
           { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
           { name: "name", type: "VARCHAR(100)", nn: true, note: "Nome della regione anatomica" },
           { name: "side", type: "VARCHAR(10)", ck: "'left','right','bilateral','none'", note: "Lato del corpo" },
-          { name: "parent_id", type: "UUID", fk: "body_regions(id)", note: "Per sotto-regioni (auto-riferimento)" },
+          { name: "parent_id", type: "UUID", fk: "body_regions(id)", note: "NULL = macro-zona; impostato = sotto-zona (auto-riferimento)" },
           { name: "display_order", type: "SMALLINT", nn: true, df: "0", note: "Ordine di visualizzazione" },
-          { name: "svg_zone_id", type: "VARCHAR(50)", note: "ID zona SVG nella mappa corporea" },
+          { name: "svg_zone_id", type: "VARCHAR(50)", note: "ID zona SVG nella mappa corporea (macro o sotto-zona)" },
           { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
         ]
       },
@@ -586,7 +591,7 @@ const schema = [
     tables: [
       {
         name: "injuries",
-        desc: "Registro centrale degli infortuni — creato dal flusso o manualmente",
+        desc: "Registro centrale degli infortuni — creato dal flusso o manualmente. Il progresso del recupero è tracciato esclusivamente tramite injury_recovery_checkpoints.",
         columns: [
           { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
           { name: "athlete_id", type: "UUID", nn: true, fk: "athlete_profiles(id)", note: "Atleta infortunato" },
@@ -598,10 +603,9 @@ const schema = [
           { name: "injury_date", type: "DATE", nn: true, note: "Data dell'infortunio" },
           { name: "expected_return_date", type: "DATE", note: "Data prevista di rientro" },
           { name: "actual_return_date", type: "DATE", note: "Data effettiva di rientro" },
-          { name: "recovery_percentage", type: "SMALLINT", nn: true, df: "0", ck: "0–100", note: "Percentuale di recupero" },
           { name: "managing_staff_id", type: "UUID", fk: "staff_profiles(id)", note: "Staff che gestisce l'infortunio" },
           { name: "notes", type: "TEXT", note: "Note libere" },
-          { name: "status", type: "VARCHAR(20)", nn: true, df: "'active'", ck: "'active','recovering','resolved','chronic'", note: "Stato corrente" },
+          { name: "status", type: "VARCHAR(20)", nn: true, df: "'active'", ck: "'active','recovering','resolved','persistent'", note: "Stato corrente" },
           { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
           { name: "updated_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" },
           { name: "deleted_at", type: "TIMESTAMPTZ", note: "Soft-delete" }
@@ -935,6 +939,45 @@ const schema = [
           { name: "session_id", type: "UUID", note: "ID sessione utente" },
           { name: "occurred_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()", note: "Data/ora dell'evento" }
         ]
+      }
+    ]
+  },
+  // ── 13. Notifications ──
+  {
+    section: "Notifiche",
+    icon: "🔔",
+    filter: "notif",
+    tables: [
+      {
+        name: "notifications",
+        desc: "Definizione della notifica — titolo, corpo, audience, scheduling. Creata manualmente dall'admin o automaticamente da una Edge Function.",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "created_by_admin_id", type: "UUID", fk: "admin_profiles(id)", note: "Admin che ha creato la notifica (NULL se automatica)" },
+          { name: "title", type: "VARCHAR(255)", nn: true, note: "Titolo della notifica" },
+          { name: "body", type: "TEXT", nn: true, note: "Testo della notifica" },
+          { name: "trigger_type", type: "VARCHAR(20)", nn: true, ck: "'manual','automatic'", note: "manual = admin; automatic = sistema" },
+          { name: "trigger_event", type: "VARCHAR(100)", note: "Es. 'program_assigned', 'injury_status_changed' (NULL per manuale)" },
+          { name: "target_scope", type: "VARCHAR(20)", nn: true, ck: "'all','society','team','athlete'", note: "Ampiezza audience" },
+          { name: "target_society_id", type: "UUID", fk: "societies(id)", note: "Società target (se scope = society)" },
+          { name: "target_team_id", type: "UUID", fk: "teams(id)", note: "Squadra target (se scope = team)" },
+          { name: "target_athlete_id", type: "UUID", fk: "athlete_profiles(id)", note: "Atleta target (se scope = athlete)" },
+          { name: "scheduled_at", type: "TIMESTAMPTZ", note: "NULL = invio immediato; impostato = invio programmato" },
+          { name: "sent_at", type: "TIMESTAMPTZ", note: "Impostato dalla Edge Function quando il fan-out è completato" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ]
+      },
+      {
+        name: "notification_deliveries",
+        desc: "Una riga per coppia (notifica, utente) — record di consegna + ricevuta di lettura. Alimentata dalla Edge Function via service-role key.",
+        columns: [
+          { name: "id", type: "UUID", pk: true, nn: true, df: "gen_random_uuid()" },
+          { name: "notification_id", type: "UUID", nn: true, fk: "notifications(id)", note: "Notifica consegnata" },
+          { name: "user_id", type: "UUID", nn: true, fk: "users(id)", note: "Destinatario" },
+          { name: "read_at", type: "TIMESTAMPTZ", note: "NULL = non letto; impostato quando l'utente apre la notifica" },
+          { name: "created_at", type: "TIMESTAMPTZ", nn: true, df: "NOW()" }
+        ],
+        unique: ["notification_id + user_id"]
       }
     ]
   }
