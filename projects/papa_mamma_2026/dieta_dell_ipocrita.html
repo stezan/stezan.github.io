@@ -139,6 +139,7 @@
 
   .top-right{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
   .round-tag{
+    margin-top:60px;
     background:var(--ink);color:var(--oro-sacro);
     padding:5px 9px;
     font-family:Bungee,system-ui,sans-serif;font-size:10px;
@@ -204,14 +205,6 @@
   .thermo.danger .thermo-bulb{animation:bulbPulse .35s ease-in-out infinite;}
   @keyframes bulbPulse{50%{box-shadow:inset 4px 4px 0 rgba(255,255,255,.5),0 0 18px #ff2d4a;}}
 
-  .lives{display:flex;gap:4px;}
-  .life{
-    width:22px;height:22px;border-radius:50%;
-    background:#fff;border:2px solid var(--ink);
-    font-family:Bungee,system-ui,sans-serif;font-size:8px;color:var(--ink);
-    display:flex;align-items:center;justify-content:center;
-  }
-  .life.spent{background:rgba(255,255,255,.18);color:var(--ink);}
 
   /* foods */
   .food{
@@ -544,10 +537,10 @@
   /* confetti / sparkles on title */
   .confetti-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55;}
 
-  /* mute toggle */
+  /* mute toggle — sits below the HUD top row so it never covers the timer */
   #mute-btn{
     position:fixed;
-    top:calc(8px + env(safe-area-inset-top, 0px));
+    top:calc(120px + env(safe-area-inset-top, 0px));
     right:calc(10px + env(safe-area-inset-right, 0px));
     z-index:30;
     width:34px;height:34px;border-radius:50%;
@@ -604,9 +597,6 @@
       <div class="top-right">
         <div class="combo-tag" id="combo-tag">×2 COMBO!</div>
         <div class="round-tag" id="round-tag">⏱ 0:00</div>
-        <div class="lives" id="lives">
-          <div class="life">⚕</div><div class="life">⚕</div><div class="life">⚕</div>
-        </div>
       </div>
     </div>
 
@@ -879,7 +869,6 @@ const $thermoFill = document.getElementById('thermo-fill');
 const $scoreNum = document.getElementById('score-num');
 const $combo    = document.getElementById('combo-tag');
 const $round    = document.getElementById('round-tag');
-const $lives    = document.getElementById('lives');
 const $petto    = document.getElementById('petto-btn');
 const $pettoCd  = document.getElementById('petto-cd');
 const $alert    = document.getElementById('alert-bar');
