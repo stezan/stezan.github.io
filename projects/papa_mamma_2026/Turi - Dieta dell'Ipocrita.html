@@ -5,6 +5,31 @@
 <title>Turi: La Dieta dell'Ipocrita</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
 <meta name="theme-color" content="#5a0e0a"/>
+
+<!-- SEO -->
+<meta name="description" content="Un gioco per i 62 anni di Turi: schiva Dolores, accumula calorie clandestine e prega per il bicarbonato. Buon compleanno papà!"/>
+<meta name="author" content="Stefano"/>
+<meta name="language" content="it"/>
+
+<!-- Open Graph (WhatsApp, Facebook, Telegram, ecc.) -->
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Compleanno Turi"/>
+<meta property="og:locale" content="it_IT"/>
+<meta property="og:title" content="Turi: La Dieta dell'Ipocrita"/>
+<meta property="og:description" content="62 anni di stravizi! Aiuta Turi a ingozzarsi di parmigiano e panettone… ma attento a Dolores: ti vede e ti rovina la festa."/>
+<meta property="og:url" content="https://stezan.github.io/projects/papa_mamma_2026/Turi%20-%20Dieta%20dell%27Ipocrita.html"/>
+<meta property="og:image" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg"/>
+<meta property="og:image:secure_url" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg"/>
+<meta property="og:image:type" content="image/jpeg"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="Turi: La Dieta dell'Ipocrita — un gioco per i 62 anni di Turi"/>
+
+<!-- Twitter Card (alcune anteprime ricadono qui) -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Turi: La Dieta dell'Ipocrita"/>
+<meta name="twitter:description" content="Un gioco per i 62 anni di Turi. Calorie clandestine, mamma Dolores e tanto bicarbonato."/>
+<meta name="twitter:image" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -820,7 +845,6 @@ const game = {
   pettoCdEndAt:0,
   pettoLastTap:0,
   startedAt:0,
-  round:1,
   sins:0,
   virtues:0,
   turi:{x:0.5,y:0,w:130,h:170},     // x,y in normalized 0..1 of game container
@@ -1235,7 +1259,7 @@ function startGame(){
   game.doloresActive=false; game.doloresCount=0;
   game.pettoActive=false; game.pettoEndAt=0; game.pettoCdEndAt=0;
   game.startedAt=performance.now();
-  game.round=1; game.sins=0; game.virtues=0;
+  game.sins=0; game.virtues=0;
   game.turi.x=0.5;
   document.body.classList.add('playing');
   document.body.classList.remove('dolores-on','petto-on');
@@ -1247,7 +1271,7 @@ function startGame(){
   // reset thermometer width visually
   $thermoFill.style.height='0%';
   $scoreNum.textContent=fmtKcal(0);
-  $round.textContent='ROUND 01 · 0:00';
+  $round.textContent='⏱ 0:00';
 }
 
 function gameOver(){
