@@ -36,11 +36,22 @@
   }
   #game{
     position:relative;
-    width:min(100vw, calc(100vh * 390 / 844));
-    height:min(100vh, calc(100vw * 844 / 390));
+    /* Mobile-first: fill the available visible viewport. dvh tracks
+       browser-chrome show/hide so nothing gets clipped. */
+    width:100vw;
+    width:100dvw;
+    height:100vh;
+    height:100dvh;
     overflow:hidden;
     background:radial-gradient(ellipse at 50% 0%, #ff7e1a 0%, #c9302a 55%, #5a0e0a 100%);
     box-shadow:0 0 0 2px var(--ink), 0 30px 80px rgba(0,0,0,0.8);
+  }
+  /* On wider/landscape viewports (desktop), constrain to a phone-sized frame. */
+  @media (min-aspect-ratio: 10/16){
+    #game{
+      width:min(100vw, calc(100dvh * 390 / 844));
+      height:100dvh;
+    }
   }
   /* diagonal stripes overlay */
   .stripes{
@@ -65,7 +76,10 @@
 
   /* ── HUD ── */
   .hud-top{
-    position:absolute;top:14px;left:14px;right:14px;
+    position:absolute;
+    top:calc(8px + env(safe-area-inset-top, 0px));
+    left:calc(10px + env(safe-area-inset-left, 0px));
+    right:calc(10px + env(safe-area-inset-right, 0px));
     display:flex;justify-content:space-between;align-items:flex-start;
     z-index:6;pointer-events:none;
   }
@@ -117,9 +131,31 @@
 
   /* Thermometer */
   .thermo{
-    position:absolute;left:10px;top:120px;z-index:6;pointer-events:none;
-    width:54px;height:280px;
+    position:absolute;
+    left:calc(8px + env(safe-area-inset-left, 0px));
+    top:calc(120px + env(safe-area-inset-top, 0px));
+    z-index:6;pointer-events:none;
+    width:54px;
+    height:min(280px, 38dvh);
     font-family:Bungee,system-ui,sans-serif;
+  }
+  .thermo-tube{
+    position:absolute;left:16px;top:0;
+    width:22px;
+    height:calc(100% - 40px);
+    background:rgba(255,255,255,.18);
+    border:2.5px solid var(--ink);border-bottom:none;
+    border-radius:11px 11px 0 0;
+    box-shadow:inset 2px 0 0 rgba(255,255,255,.4),inset -2px 0 0 rgba(0,0,0,.15);
+    overflow:hidden;
+  }
+  .thermo-bulb{
+    position:absolute;left:8px;
+    top:calc(100% - 40px);
+    width:38px;height:38px;
+    background:var(--rosso-mamma);
+    border:2.5px solid var(--ink);border-radius:50%;
+    box-shadow:inset 4px 4px 0 rgba(255,255,255,.35),0 4px 12px rgba(255,45,74,.55);
   }
   .thermo-label{
     position:absolute;top:-28px;left:0;
@@ -129,14 +165,6 @@
     border:2px solid var(--oro-sacro);border-radius:2px;
     box-shadow:0 2px 0 var(--oro-sacro);
   }
-  .thermo-tube{
-    position:absolute;left:16px;top:0;width:22px;height:240px;
-    background:rgba(255,255,255,.18);
-    border:2.5px solid var(--ink);border-bottom:none;
-    border-radius:11px 11px 0 0;
-    box-shadow:inset 2px 0 0 rgba(255,255,255,.4),inset -2px 0 0 rgba(0,0,0,.15);
-    overflow:hidden;
-  }
   .thermo-fill{
     position:absolute;left:0;right:0;bottom:0;height:0%;
     background:linear-gradient(180deg,#ff2d4a 0%,#ff7e1a 45%,#ffd24c 80%,#6dc97a 100%);
@@ -144,12 +172,6 @@
     box-shadow:inset 2px 0 0 rgba(255,255,255,.5);
   }
   .thermo-tick{position:absolute;left:0;right:0;height:0;border-top:1.5px solid rgba(0,0,0,.5);}
-  .thermo-bulb{
-    position:absolute;left:8px;top:234px;width:38px;height:38px;
-    background:var(--rosso-mamma);
-    border:2.5px solid var(--ink);border-radius:50%;
-    box-shadow:inset 4px 4px 0 rgba(255,255,255,.35),0 4px 12px rgba(255,45,74,.55);
-  }
   .thermo-bulb::after{
     content:"";position:absolute;inset:4px;border-radius:50%;
     background:radial-gradient(circle at 30% 30%,#ff7e9a,#ff2d4a 60%);
@@ -196,8 +218,10 @@
   /* TURI player */
   #turi{
     position:absolute;
-    bottom:90px;left:50%;
-    width:130px;height:170px;
+    bottom:calc(80px + env(safe-area-inset-bottom, 0px));
+    left:50%;
+    width:clamp(96px, 30dvw, 140px);
+    aspect-ratio:130/170;
     transform:translateX(-50%);
     z-index:4;pointer-events:none;
     transition:transform 0.05s linear;
@@ -216,8 +240,11 @@
 
   /* Petto Digitale FAB */
   #petto-btn{
-    position:absolute;bottom:24px;right:14px;z-index:7;
-    width:74px;height:74px;border-radius:50%;
+    position:absolute;
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+    right:calc(12px + env(safe-area-inset-right, 0px));
+    z-index:7;
+    width:64px;height:64px;border-radius:50%;
     border:none;padding:0;cursor:pointer;
     background:transparent;
     font-family:Bungee,system-ui,sans-serif;
@@ -249,7 +276,10 @@
   @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
 
   .petto-hint{
-    position:absolute;bottom:108px;right:22px;z-index:6;
+    position:absolute;
+    bottom:calc(86px + env(safe-area-inset-bottom, 0px));
+    right:calc(18px + env(safe-area-inset-right, 0px));
+    z-index:6;
     font-family:Bungee,system-ui,sans-serif;font-size:8px;
     color:var(--oro-sacro);background:var(--ink);padding:3px 6px;
     border:1.5px solid var(--oro-sacro);transform:rotate(-4deg);
@@ -344,33 +374,44 @@
     position:absolute;inset:0;z-index:20;
     display:flex;flex-direction:column;align-items:center;
     overflow:hidden;
+    padding:calc(env(safe-area-inset-top, 0px) + 12px)
+            calc(env(safe-area-inset-right, 0px) + 12px)
+            calc(env(safe-area-inset-bottom, 0px) + 12px)
+            calc(env(safe-area-inset-left, 0px) + 12px);
   }
   #screen-title{
     background:radial-gradient(ellipse at 50% 30%,#ffd24c 0%,#ff7e1a 40%,#c9302a 75%,#5a0e0a 100%);
-    padding-top:8%;
+    justify-content:space-between;
   }
   .tag-chip{
-    margin-top:14px;
     font-family:Bungee,system-ui;font-size:11px;letter-spacing:2px;
     color:var(--ink);background:var(--oro-sacro);
     padding:4px 12px;border:2px solid var(--ink);
     transform:rotate(-2deg);box-shadow:3px 3px 0 var(--ink);
   }
   .logo-big{
-    margin-top:18px;
+    margin-top:clamp(6px, 1.5dvh, 18px);
     font-family:"Bungee Shade","Bungee",sans-serif;
-    font-size:84px;line-height:.85;color:var(--oro-sacro);
+    font-size:clamp(54px, 11dvh, 84px);
+    line-height:.85;color:var(--oro-sacro);
     text-shadow:5px 5px 0 var(--ink),-2px -2px 0 var(--rosso-mamma);
     transform:rotate(-3deg);letter-spacing:-2px;
   }
   .logo-sub{
-    margin-top:6px;font-family:Bungee,sans-serif;font-size:18px;
+    margin-top:6px;font-family:Bungee,sans-serif;
+    font-size:clamp(13px, 2.4dvh, 18px);
     color:var(--crema);line-height:1.05;text-align:center;
     text-shadow:3px 3px 0 var(--ink);letter-spacing:.5px;
   }
   .turi-hero{
-    position:relative;margin-top:10px;width:60%;max-width:220px;aspect-ratio:1/1.27;
+    position:relative;
+    margin-top:clamp(4px, 1dvh, 10px);
+    width:min(58%, 220px);
+    aspect-ratio:1/1.27;
+    flex:0 1 auto;
+    max-height:38dvh;
   }
+  .turi-hero img{object-fit:contain;}
   .turi-hero img{
     position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
     filter:drop-shadow(0 12px 0 rgba(0,0,0,.35));
@@ -382,85 +423,98 @@
   }
   @keyframes auraSpin{to{transform:rotate(360deg);}}
   .cta{
-    margin-top:14px;padding:14px 28px;border:3px solid var(--ink);
+    margin-top:clamp(8px, 1.5dvh, 16px);
+    padding:clamp(10px, 1.6dvh, 14px) 28px;border:3px solid var(--ink);
     background:var(--oro-sacro);color:var(--ink);
-    font-family:Bungee,sans-serif;font-size:18px;letter-spacing:1px;
+    font-family:Bungee,sans-serif;font-size:clamp(15px, 2.2dvh, 18px);letter-spacing:1px;
     box-shadow:0 6px 0 var(--ink),0 6px 0 3px var(--rosso-mamma);
     border-radius:6px;cursor:pointer;
   }
   .cta:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink),0 2px 0 3px var(--rosso-mamma);}
-  .record{margin-top:14px;font-size:10px;opacity:.8;font-family:Bungee,sans-serif;letter-spacing:1px;color:var(--crema);}
+  .record{
+    margin-top:clamp(6px, 1.2dvh, 14px);
+    font-size:10px;opacity:.8;font-family:Bungee,sans-serif;letter-spacing:1px;color:var(--crema);
+  }
 
   /* ── GAME OVER SCREEN ── */
   #screen-gameover{
     background:radial-gradient(ellipse at 50% 50%,#4a3a2a 0%,#2a1a1f 60%,#0a0606 100%);
     display:none;
-    padding-top:6%;
     align-items:center;
+    justify-content:flex-start;
+    gap:clamp(6px, 1.2dvh, 14px);
   }
   #screen-gameover.show{display:flex;}
   .sick-aura{
     position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(120,160,80,.35),transparent 60%);pointer-events:none;
   }
   .stamp{
-    display:inline-block;margin-top:6%;
-    font-family:"Bungee Shade",Bungee,sans-serif;font-size:20px;
+    display:inline-block;
+    font-family:"Bungee Shade",Bungee,sans-serif;
+    font-size:clamp(16px, 2.4dvh, 20px);
     color:var(--rosso-mamma);letter-spacing:4px;
     transform:rotate(-3deg);padding:4px 14px;
     border:4px solid var(--rosso-mamma);
     text-shadow:2px 2px 0 var(--ink);
   }
   .sick-turi{
-    position:relative;margin-top:14px;width:62%;max-width:240px;aspect-ratio:1/1.32;
+    position:relative;
+    width:min(60%, 240px);
+    aspect-ratio:1/1.32;
+    flex:0 1 auto;
+    max-height:32dvh;
   }
+  .sick-turi img{object-fit:contain;}
   .sick-turi img{
     position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
     filter:drop-shadow(0 8px 0 rgba(0,0,0,.5));
   }
   .sick-turi .glow-stars{position:absolute;top:-12px;left:50%;transform:translateX(-50%);}
   .sick-turi .sweat{position:absolute;font-size:22px;}
-  .gameover-title{
-    margin-top:14px;text-align:center;
-  }
+  .gameover-title{text-align:center;}
   .gameover-title .top{
-    font-family:"Bungee Shade",Bungee,sans-serif;font-size:30px;line-height:.9;color:var(--oro-sacro);
+    font-family:"Bungee Shade",Bungee,sans-serif;
+    font-size:clamp(22px, 3.6dvh, 30px);
+    line-height:.9;color:var(--oro-sacro);
     text-shadow:4px 4px 0 var(--ink);transform:rotate(-2deg);letter-spacing:.5px;
   }
   .gameover-title .bot{
-    margin-top:4px;font-family:Bungee,sans-serif;font-size:46px;line-height:.9;color:#fff;
+    margin-top:4px;font-family:Bungee,sans-serif;
+    font-size:clamp(34px, 5.5dvh, 46px);
+    line-height:.9;color:#fff;
     text-shadow:5px 5px 0 var(--rosso-mamma),8px 8px 0 var(--ink);
     transform:rotate(-1deg);letter-spacing:-1px;
   }
   .scorecard{
-    margin:14px 22px 0;
     background:var(--ink);border:3px solid var(--oro-sacro);
-    padding:10px 14px;
-    display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;
+    padding:clamp(6px, 1.2dvh, 10px) 14px;
+    display:grid;grid-template-columns:1fr 1fr;gap:clamp(2px, .6dvh, 6px) 12px;
     font-family:Bungee,sans-serif;
-    width:calc(100% - 44px);max-width:340px;
+    width:min(100% - 24px, 340px);
     box-sizing:border-box;
   }
   .scorecard .k{font-size:8px;color:var(--oro-sacro);opacity:.85;letter-spacing:.5px;}
-  .scorecard .v{font-size:20px;letter-spacing:1px;color:#fff;}
+  .scorecard .v{font-size:clamp(15px, 2.5dvh, 20px);letter-spacing:1px;color:#fff;}
   .scorecard .v.kcal{color:var(--arancio-ragu);}
   .scorecard .v.bad{color:var(--rosso-mamma);}
   .restart{
-    margin-top:14px;width:calc(100% - 44px);max-width:340px;
-    padding:14px 16px;
+    width:min(100% - 24px, 340px);
+    padding:clamp(10px, 1.6dvh, 14px) 16px;
     background:var(--oro-sacro);color:var(--ink);
     border:3px solid var(--ink);
-    font-family:Bungee,sans-serif;font-size:18px;letter-spacing:1px;
+    font-family:Bungee,sans-serif;font-size:clamp(15px, 2.2dvh, 18px);letter-spacing:1px;
     box-shadow:0 6px 0 var(--rosso-mamma),0 6px 0 3px var(--ink);
     border-radius:6px;cursor:pointer;
   }
   .restart:active{transform:translateY(4px);box-shadow:0 2px 0 var(--rosso-mamma),0 2px 0 3px var(--ink);}
   .footer-msg{
-    margin-top:auto;padding:16px 16px 22px;
+    margin-top:auto;padding:clamp(8px, 1.2dvh, 14px) 16px clamp(6px, 1dvh, 12px);
     text-align:center;font-family:Bungee,sans-serif;
-    font-size:15px;color:var(--oro-sacro);opacity:.95;letter-spacing:.8px;line-height:1.35;
+    font-size:clamp(13px, 2dvh, 16px);
+    color:var(--oro-sacro);opacity:.95;letter-spacing:.8px;line-height:1.35;
     text-shadow:2px 2px 0 var(--ink);
   }
-  .footer-msg .small{font-size:12px;opacity:.8;display:block;margin-top:4px;}
+  .footer-msg .small{font-size:clamp(10px, 1.5dvh, 12px);opacity:.8;display:block;margin-top:4px;}
 
   /* confetti / sparkles on title */
   .confetti-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55;}
@@ -506,7 +560,7 @@
       </div>
       <div class="top-right">
         <div class="combo-tag" id="combo-tag">×2 COMBO!</div>
-        <div class="round-tag" id="round-tag">ROUND 01 · 0:00</div>
+        <div class="round-tag" id="round-tag">⏱ 0:00</div>
         <div class="lives" id="lives">
           <div class="life">⚕</div><div class="life">⚕</div><div class="life">⚕</div>
         </div>
@@ -823,6 +877,12 @@ function measure(){
   const r=$game.getBoundingClientRect();
   game.width=r.width;
   game.height=r.height;
+  const tr=$turi.getBoundingClientRect();
+  if(tr.width)  game.turi.w = tr.width;
+  if(tr.height) game.turi.h = tr.height;
+  // bottom offset of Turi from the bottom of the game container
+  const cs = getComputedStyle($turi);
+  game.turi.bottom = parseFloat(cs.bottom) || 80;
 }
 window.addEventListener('resize',measure,{passive:true});
 measure();
@@ -838,27 +898,41 @@ function pointerToGame(e){
 function setTuriX(nx){
   game.turi.x=Math.max(0.08,Math.min(0.92,nx));
 }
+// Ignore events whose target is the Petto button (or anything inside it)
+// so that pressing the FAB doesn't drag Turi.
+function isUITarget(e){
+  const t = e.target;
+  return !!t && (t===$petto || $petto.contains(t));
+}
 function onPointer(e){
   if(game.state!=='playing') return;
+  if(isUITarget(e)) return;
   if(e.cancelable) e.preventDefault();
   const p=pointerToGame(e);
   setTuriX(p.x);
 }
 $game.addEventListener('touchstart',onPointer,{passive:false});
 $game.addEventListener('touchmove', onPointer,{passive:false});
-$game.addEventListener('mousedown', e=>{ game._mouseDown=true; onPointer(e); });
-$game.addEventListener('mousemove', e=>{ if(game._mouseDown) onPointer(e); });
+$game.addEventListener('mousedown', e=>{ if(isUITarget(e)) return; game._mouseDown=true; onPointer(e); });
+$game.addEventListener('mousemove', e=>{ if(game._mouseDown && !isUITarget(e)) onPointer(e); });
 window.addEventListener('mouseup',  ()=>{ game._mouseDown=false; });
 
-// Petto Digitale: button + double-tap anywhere
-$petto.addEventListener('click',e=>{ e.stopPropagation(); triggerPetto(); });
+// Petto Digitale: button taps must not bubble into the game's pointer handlers.
+const stopAll = e => { e.stopPropagation(); };
+['touchstart','touchmove','touchend','mousedown','mouseup','click','dblclick']
+  .forEach(ev => $petto.addEventListener(ev, stopAll));
+$petto.addEventListener('touchstart',e=>{ e.preventDefault(); triggerPetto(); },{passive:false});
+$petto.addEventListener('click',     e=>{ triggerPetto(); });
+
+// Double-tap anywhere on the playfield (but not on the FAB) also fires Petto.
 $game.addEventListener('touchend',e=>{
   if(game.state!=='playing') return;
+  if(isUITarget(e)) return;
   const now=performance.now();
   if(now-game.pettoLastTap<320) triggerPetto();
   game.pettoLastTap=now;
 });
-$game.addEventListener('dblclick',e=>{ if(game.state==='playing') triggerPetto(); });
+$game.addEventListener('dblclick',e=>{ if(game.state==='playing' && !isUITarget(e)) triggerPetto(); });
 
 //──────────────────────────────────────────────────────────
 // Spawning food
@@ -929,7 +1003,7 @@ function triggerPetto(){
   sw.className='shockwave';
   const r=$game.getBoundingClientRect();
   sw.style.left = (game.turi.x*r.width)+'px';
-  sw.style.top  = (r.height - game.turi.h*0.55) +'px';
+  sw.style.top  = (r.height - (game.turi.bottom||80) - game.turi.h*0.55) +'px';
   $playfield.appendChild(sw);
   setTimeout(()=>sw.remove(),900);
 
@@ -967,7 +1041,7 @@ function catchBox(){
   // Catch zone around Turi's mouth (upper area of sprite)
   const w=game.width, h=game.height;
   const tx=game.turi.x*w;
-  const ty=h - 90 - game.turi.h*0.55;   // around mouth height
+  const ty=h - (game.turi.bottom||80) - game.turi.h*0.55;
   const rx=game.turi.w*0.32;
   const ry=game.turi.h*0.30;
   return {tx,ty,rx,ry};
@@ -1066,7 +1140,7 @@ function tick(dt, now){
   // Foods physics
   const box = catchBox();
   const tx = game.turi.x;
-  const ty = (game.height - 90 - game.turi.h*0.55)/game.height;
+  const ty = (game.height - (game.turi.bottom||80) - game.turi.h*0.55)/game.height;
 
   for(let i=game.foods.length-1;i>=0;i--){
     const f=game.foods[i];
@@ -1139,11 +1213,9 @@ function tick(dt, now){
   $scoreNum.textContent = fmtKcal(game.score);
 
   const elapsed=(now-game.startedAt)/1000;
-  const round = Math.min(9, 1+Math.floor(elapsed/30));
-  game.round=round;
   const sec = Math.floor(elapsed)%60;
   const min = Math.floor(elapsed/60);
-  $round.textContent = `ROUND 0${round} · ${min}:${String(sec).padStart(2,'0')}`;
+  $round.textContent = `⏱ ${min}:${String(sec).padStart(2,'0')}`;
 
   // Game over
   if(game.indigestion>=100) gameOver();
