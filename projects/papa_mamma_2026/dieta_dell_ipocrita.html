@@ -544,6 +544,22 @@
   /* confetti / sparkles on title */
   .confetti-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55;}
 
+  /* mute toggle */
+  #mute-btn{
+    position:fixed;
+    top:calc(8px + env(safe-area-inset-top, 0px));
+    right:calc(10px + env(safe-area-inset-right, 0px));
+    z-index:30;
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(26,6,6,.7);color:var(--oro-sacro);
+    border:2px solid var(--oro-sacro);
+    font:700 16px/1 Bungee, system-ui, sans-serif;
+    cursor:pointer;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 0 var(--ink);
+  }
+  #mute-btn.muted{color:#888;border-color:#888;text-decoration:line-through;}
+
   /* hide game HUD when not playing */
   body:not(.playing) .hud-top,
   body:not(.playing) .thermo,
@@ -554,6 +570,8 @@
 </style>
 </head>
 <body>
+<audio id="bgm" src="assets/song.mp3" loop preload="auto" playsinline></audio>
+<button id="mute-btn" aria-label="Audio on/off">♪</button>
 <div id="stage">
   <div id="game">
 
@@ -876,6 +894,45 @@ function fmtKcal(n){
   return String(Math.floor(n)).padStart(5,'0').replace(/(\d{1,3})(?=(\d{3})+$)/g,'$1.');
 }
 
+// ── Haptics ──
+// iOS Safari has no vibration API. Android Chrome requires user activation
+// and may block calls from inside rAF if the gesture has expired (~5s).
+// `hapticPrime` runs from a real user-tap to warm up the API; `haptic`
+// is the per-event call (best-effort; silent if unsupported).
+const hasVibrate = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+let hapticPrimed = false;
+function hapticPrime(){
+  if(!hasVibrate || hapticPrimed) return;
+  try { navigator.vibrate(1); hapticPrimed = true; } catch(_){}
+}
+function haptic(pattern){
+  if(!hasVibrate) return;
+  try { navigator.vibrate(pattern); } catch(_){}
+}
+
+// ── Background music ──
+// Plays once on the first user gesture, loops forever, and is *not*
+// restarted when a new game begins — it just keeps going.
+const $bgm  = document.getElementById('bgm');
+const $mute = document.getElementById('mute-btn');
+let bgmStarted = false;
+$bgm.volume = 0.55;
+function startMusic(){
+  if(bgmStarted || $bgm.muted) return;
+  const p = $bgm.play();
+  if(p && typeof p.then === 'function'){
+    p.then(()=>{ bgmStarted = true; }).catch(()=>{ /* will retry on next gesture */ });
+  } else {
+    bgmStarted = true;
+  }
+}
+$mute.addEventListener('click', e=>{
+  e.stopPropagation();
+  $bgm.muted = !$bgm.muted;
+  $mute.classList.toggle('muted', $bgm.muted);
+  if(!$bgm.muted) startMusic();
+});
+
 //──────────────────────────────────────────────────────────
 // Title decoration: confetti
 //──────────────────────────────────────────────────────────
@@ -932,6 +989,8 @@ function onPointer(e){
   if(game.state!=='playing') return;
   if(isUITarget(e)) return;
   if(e.cancelable) e.preventDefault();
+  hapticPrime();              // first real user gesture warms up the API
+  startMusic();               // and (re)tries music if browser blocked autoplay
   const p=pointerToGame(e);
   setTuriX(p.x);
 }
@@ -945,8 +1004,8 @@ window.addEventListener('mouseup',  ()=>{ game._mouseDown=false; });
 const stopAll = e => { e.stopPropagation(); };
 ['touchstart','touchmove','touchend','mousedown','mouseup','click','dblclick']
   .forEach(ev => $petto.addEventListener(ev, stopAll));
-$petto.addEventListener('touchstart',e=>{ e.preventDefault(); triggerPetto(); },{passive:false});
-$petto.addEventListener('click',     e=>{ triggerPetto(); });
+$petto.addEventListener('touchstart',e=>{ e.preventDefault(); hapticPrime(); triggerPetto(); },{passive:false});
+$petto.addEventListener('click',     e=>{ hapticPrime(); triggerPetto(); });
 
 // Double-tap anywhere on the playfield (but not on the FAB) also fires Petto.
 $game.addEventListener('touchend',e=>{
@@ -1031,7 +1090,7 @@ function triggerPetto(){
   $playfield.appendChild(sw);
   setTimeout(()=>sw.remove(),900);
 
-  if(navigator.vibrate) navigator.vibrate([30,30,30]);
+  haptic([30,30,30,30,30]);
 }
 
 function endPetto(){
@@ -1102,7 +1161,7 @@ function eatSinful(food){
   const fill = game.doloresActive ? fillBase*5 : fillBase;
   game.indigestion = Math.min(100, game.indigestion + fill);
   popup(`+${kcal} KCAL`, food.x, food.y, game.combo>=3?'huge':'good');
-  if(navigator.vibrate) navigator.vibrate([50]);
+  haptic(80);
   if(game.doloresActive){
     popup('×5!', food.x, food.y-0.04, 'huge');
   }
@@ -1290,8 +1349,8 @@ function gameOver(){
   $screenGO.classList.add('show');
 }
 
-$titleBtn.addEventListener('click',startGame);
-$restart.addEventListener('click',startGame);
+$titleBtn.addEventListener('click',()=>{ hapticPrime(); haptic(20); startMusic(); startGame(); });
+$restart .addEventListener('click',()=>{ hapticPrime(); haptic(20); startMusic(); startGame(); });
 
 requestAnimationFrame(loop);
 </script>
