@@ -1,699 +1,1202 @@
 <!doctype html>
 <html lang="it">
+
 <head>
-<meta charset="utf-8"/>
-<title>Turi: La Dieta dell'Ipocrita</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
-<meta name="theme-color" content="#5a0e0a"/>
+  <meta charset="utf-8" />
+  <title>Turi: La Dieta dell'Ipocrita</title>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#5a0e0a" />
 
-<!-- SEO -->
-<meta name="description" content="Un gioco per i 62 anni di Turi: schiva Dolores, accumula calorie clandestine e prega per il bicarbonato. Buon compleanno papà!"/>
-<meta name="author" content="Stefano"/>
-<meta name="language" content="it"/>
+  <!-- SEO -->
+  <meta name="description"
+    content="Un gioco per i 62 anni di Turi: schiva Dolores, accumula calorie clandestine e prega per il bicarbonato. Buon compleanno papà!" />
+  <meta name="author" content="Stefano" />
+  <meta name="language" content="it" />
 
-<!-- Open Graph (WhatsApp, Facebook, Telegram, ecc.) -->
-<meta property="og:type" content="website"/>
-<meta property="og:site_name" content="Compleanno Turi"/>
-<meta property="og:locale" content="it_IT"/>
-<meta property="og:title" content="Turi: La Dieta dell'Ipocrita"/>
-<meta property="og:description" content="62 anni di stravizi! Aiuta Turi a ingozzarsi di parmigiano e panettone… ma attento a Dolores: ti vede e ti rovina la festa."/>
-<meta property="og:url" content="https://stezan.github.io/projects/papa_mamma_2026/Turi%20-%20Dieta%20dell%27Ipocrita.html"/>
-<meta property="og:image" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg"/>
-<meta property="og:image:secure_url" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg"/>
-<meta property="og:image:type" content="image/jpeg"/>
-<meta property="og:image:width" content="1200"/>
-<meta property="og:image:height" content="630"/>
-<meta property="og:image:alt" content="Turi: La Dieta dell'Ipocrita — un gioco per i 62 anni di Turi"/>
+  <!-- Open Graph (WhatsApp, Facebook, Telegram, ecc.) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Compleanno Turi" />
+  <meta property="og:locale" content="it_IT" />
+  <meta property="og:title" content="Turi: La Dieta dell'Ipocrita" />
+  <meta property="og:description"
+    content="62 anni di stravizi! Aiuta Turi a ingozzarsi di parmigiano e panettone… ma attento a Dolores: ti vede e ti rovina la festa." />
+  <meta property="og:url"
+    content="https://stezan.github.io/projects/papa_mamma_2026/Turi%20-%20Dieta%20dell%27Ipocrita.html" />
+  <meta property="og:image" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg" />
+  <meta property="og:image:secure_url" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Turi: La Dieta dell'Ipocrita — un gioco per i 62 anni di Turi" />
 
-<!-- Twitter Card (alcune anteprime ricadono qui) -->
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Turi: La Dieta dell'Ipocrita"/>
-<meta name="twitter:description" content="Un gioco per i 62 anni di Turi. Calorie clandestine, mamma Dolores e tanto bicarbonato."/>
-<meta name="twitter:image" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --rosso-mamma:#ff2d4a;
-    --arancio-ragu:#ff7e1a;
-    --oro-sacro:#ffd24c;
-    --granata:#5a0e0a;
-    --crema:#fff8e8;
-    --ink:#1a0606;
-    --sage:#9faa9a;
-    --blu-espresso:#5aa8ff;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{
-    margin:0;padding:0;height:100%;overflow:hidden;
-    background:#0a0606;
-    font-family:Manrope,system-ui,sans-serif;
-    color:var(--crema);
-    overscroll-behavior:none;
-    user-select:none;-webkit-user-select:none;
-    touch-action:none;
-  }
-  #stage{
-    position:fixed;inset:0;
-    display:flex;align-items:center;justify-content:center;
-    background:radial-gradient(ellipse at center,#2a0a0a,#000);
-  }
-  #game{
-    position:relative;
-    /* Mobile-first: fill the available visible viewport. dvh tracks
-       browser-chrome show/hide so nothing gets clipped. */
-    width:100vw;
-    width:100dvw;
-    height:100vh;
-    height:100dvh;
-    overflow:hidden;
-    background:radial-gradient(ellipse at 50% 0%, #ff7e1a 0%, #c9302a 55%, #5a0e0a 100%);
-    box-shadow:0 0 0 2px var(--ink), 0 30px 80px rgba(0,0,0,0.8);
-  }
-  /* On wider/landscape viewports (desktop), constrain to a phone-sized frame. */
-  @media (min-aspect-ratio: 10/16){
-    #game{
-      width:min(100vw, calc(100dvh * 390 / 844));
-      height:100dvh;
+  <!-- Twitter Card (alcune anteprime ricadono qui) -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Turi: La Dieta dell'Ipocrita" />
+  <meta name="twitter:description"
+    content="Un gioco per i 62 anni di Turi. Calorie clandestine, mamma Dolores e tanto bicarbonato." />
+  <meta name="twitter:image" content="https://stezan.github.io/projects/papa_mamma_2026/assets/og.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Manrope:wght@400;500;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --rosso-mamma: #ff2d4a;
+      --arancio-ragu: #ff7e1a;
+      --oro-sacro: #ffd24c;
+      --granata: #5a0e0a;
+      --crema: #fff8e8;
+      --ink: #1a0606;
+      --sage: #9faa9a;
+      --blu-espresso: #5aa8ff;
     }
-  }
-  /* diagonal stripes overlay */
-  .stripes{
-    position:absolute;inset:0;opacity:.08;pointer-events:none;
-    background-image:repeating-linear-gradient(45deg,#fff 0 14px,transparent 14px 32px);
-  }
-  /* dolores red bg overlay */
-  .danger-tint{
-    position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(ellipse at 50% 30%, rgba(255,45,74,.55) 0%, rgba(90,14,10,.4) 60%, transparent 100%);
-    opacity:0;transition:opacity .35s ease;
-  }
-  body.dolores-on .danger-tint{opacity:1;}
-  body.dolores-on #game{animation:dangerShake .55s ease-in-out;}
-  @keyframes dangerShake{
-    0%,100%{transform:translate(0,0);}
-    20%{transform:translate(-3px,1px);}
-    40%{transform:translate(3px,-1px);}
-    60%{transform:translate(-2px,2px);}
-    80%{transform:translate(2px,-2px);}
-  }
 
-  /* ── HUD ── */
-  .hud-top{
-    position:absolute;
-    top:calc(8px + env(safe-area-inset-top, 0px));
-    left:calc(10px + env(safe-area-inset-left, 0px));
-    right:calc(10px + env(safe-area-inset-right, 0px));
-    display:flex;justify-content:space-between;align-items:flex-start;
-    z-index:6;pointer-events:none;
-  }
-  .score{
-    font-family:Bungee,system-ui,sans-serif;
-    display:inline-flex;flex-direction:column;align-items:flex-start;
-  }
-  .score-label{
-    background:var(--ink);color:var(--oro-sacro);
-    font-size:9px;letter-spacing:.6px;
-    padding:3px 8px;
-    border:2px solid var(--oro-sacro);border-bottom:none;
-    border-radius:4px 4px 0 0;
-  }
-  .score-box{
-    background:var(--ink);
-    border:2px solid var(--oro-sacro);
-    padding:5px 10px;
-    border-radius:0 4px 4px 4px;
-    box-shadow:inset 0 0 12px rgba(255,210,76,.3);
-    display:flex;align-items:baseline;gap:4px;
-  }
-  .score-num{
-    font-family:"Courier New",monospace;
-    font-size:24px;font-weight:900;color:var(--arancio-ragu);
-    letter-spacing:2px;
-    text-shadow:0 0 10px rgba(255,126,26,.8);
-  }
-  .score-num.blink{animation:blink .3s steps(2) 4;}
-  @keyframes blink{50%{opacity:.3}}
-  .score-unit{font-size:9px;color:var(--oro-sacro);letter-spacing:.5px;}
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  .top-right{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
-  .round-tag{
-    margin-top:60px;
-    background:var(--ink);color:var(--oro-sacro);
-    padding:5px 9px;
-    font-family:Bungee,system-ui,sans-serif;font-size:10px;
-    border:2px solid var(--oro-sacro);letter-spacing:.6px;
-  }
-  .combo-tag{
-    font-family:Bungee,system-ui,sans-serif;font-size:9px;letter-spacing:.5px;
-    background:var(--rosso-mamma);color:#fff;
-    padding:3px 7px;border:2px solid var(--ink);
-    transform:rotate(2deg);box-shadow:2px 2px 0 var(--ink);
-    opacity:0;transition:opacity .2s;
-  }
-  .combo-tag.show{opacity:1;animation:comboPop .35s ease-out;}
-  @keyframes comboPop{0%{transform:rotate(2deg) scale(.4);}60%{transform:rotate(2deg) scale(1.2);}100%{transform:rotate(2deg) scale(1);}}
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0606;
+      font-family: Manrope, system-ui, sans-serif;
+      color: var(--crema);
+      overscroll-behavior: none;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
 
-  /* Thermometer */
-  .thermo{
-    position:absolute;
-    left:calc(8px + env(safe-area-inset-left, 0px));
-    top:calc(120px + env(safe-area-inset-top, 0px));
-    z-index:6;pointer-events:none;
-    width:54px;
-    height:min(280px, 38dvh);
-    font-family:Bungee,system-ui,sans-serif;
-  }
-  .thermo-tube{
-    position:absolute;left:16px;top:0;
-    width:22px;
-    height:calc(100% - 40px);
-    background:rgba(255,255,255,.18);
-    border:2.5px solid var(--ink);border-bottom:none;
-    border-radius:11px 11px 0 0;
-    box-shadow:inset 2px 0 0 rgba(255,255,255,.4),inset -2px 0 0 rgba(0,0,0,.15);
-    overflow:hidden;
-  }
-  .thermo-bulb{
-    position:absolute;left:8px;
-    top:calc(100% - 40px);
-    width:38px;height:38px;
-    background:var(--rosso-mamma);
-    border:2.5px solid var(--ink);border-radius:50%;
-    box-shadow:inset 4px 4px 0 rgba(255,255,255,.35),0 4px 12px rgba(255,45,74,.55);
-  }
-  .thermo-label{
-    position:absolute;top:-28px;left:0;
-    transform:rotate(-2deg);transform-origin:left center;
-    background:var(--ink);color:var(--oro-sacro);
-    padding:4px 8px;font-size:8px;letter-spacing:.6px;white-space:nowrap;
-    border:2px solid var(--oro-sacro);border-radius:2px;
-    box-shadow:0 2px 0 var(--oro-sacro);
-  }
-  .thermo-fill{
-    position:absolute;left:0;right:0;bottom:0;height:0%;
-    background:linear-gradient(180deg,#ff2d4a 0%,#ff7e1a 45%,#ffd24c 80%,#6dc97a 100%);
-    transition:height .25s;
-    box-shadow:inset 2px 0 0 rgba(255,255,255,.5);
-  }
-  .thermo-tick{position:absolute;left:0;right:0;height:0;border-top:1.5px solid rgba(0,0,0,.5);}
-  .thermo-bulb::after{
-    content:"";position:absolute;inset:4px;border-radius:50%;
-    background:radial-gradient(circle at 30% 30%,#ff7e9a,#ff2d4a 60%);
-  }
-  .thermo.danger .thermo-bulb{animation:bulbPulse .35s ease-in-out infinite;}
-  @keyframes bulbPulse{50%{box-shadow:inset 4px 4px 0 rgba(255,255,255,.5),0 0 18px #ff2d4a;}}
+    #stage {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at center, #2a0a0a, #000);
+    }
+
+    #game {
+      position: relative;
+      /* Mobile-first: fill the available visible viewport. dvh tracks
+       browser-chrome show/hide so nothing gets clipped. */
+      width: 100vw;
+      width: 100dvw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 0%, #ff7e1a 0%, #c9302a 55%, #5a0e0a 100%);
+      box-shadow: 0 0 0 2px var(--ink), 0 30px 80px rgba(0, 0, 0, 0.8);
+    }
+
+    /* On wider/landscape viewports (desktop), constrain to a phone-sized frame. */
+    @media (min-aspect-ratio: 10/16) {
+      #game {
+        width: min(100vw, calc(100dvh * 390 / 844));
+        height: 100dvh;
+      }
+    }
+
+    /* diagonal stripes overlay */
+    .stripes {
+      position: absolute;
+      inset: 0;
+      opacity: .08;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(45deg, #fff 0 14px, transparent 14px 32px);
+    }
+
+    /* dolores red bg overlay */
+    .danger-tint {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 30%, rgba(255, 45, 74, .55) 0%, rgba(90, 14, 10, .4) 60%, transparent 100%);
+      opacity: 0;
+      transition: opacity .35s ease;
+    }
+
+    body.dolores-on .danger-tint {
+      opacity: 1;
+    }
+
+    body.dolores-on #game {
+      animation: dangerShake .55s ease-in-out;
+    }
+
+    @keyframes dangerShake {
+
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      20% {
+        transform: translate(-3px, 1px);
+      }
+
+      40% {
+        transform: translate(3px, -1px);
+      }
+
+      60% {
+        transform: translate(-2px, 2px);
+      }
+
+      80% {
+        transform: translate(2px, -2px);
+      }
+    }
+
+    /* ── HUD ── */
+    .hud-top {
+      position: absolute;
+      top: calc(8px + env(safe-area-inset-top, 0px));
+      left: calc(10px + env(safe-area-inset-left, 0px));
+      right: calc(10px + env(safe-area-inset-right, 0px));
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .score {
+      font-family: Bungee, system-ui, sans-serif;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .score-label {
+      background: var(--ink);
+      color: var(--oro-sacro);
+      font-size: 9px;
+      letter-spacing: .6px;
+      padding: 3px 8px;
+      border: 2px solid var(--oro-sacro);
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .score-box {
+      background: var(--ink);
+      border: 2px solid var(--oro-sacro);
+      padding: 5px 10px;
+      border-radius: 0 4px 4px 4px;
+      box-shadow: inset 0 0 12px rgba(255, 210, 76, .3);
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .score-num {
+      font-family: "Courier New", monospace;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--arancio-ragu);
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(255, 126, 26, .8);
+    }
+
+    .score-num.blink {
+      animation: blink .3s steps(2) 4;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: .3
+      }
+    }
+
+    .score-unit {
+      font-size: 9px;
+      color: var(--oro-sacro);
+      letter-spacing: .5px;
+    }
+
+    .top-right {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+    }
+
+    .round-tag {
+      margin-top: 60px;
+      background: var(--ink);
+      color: var(--oro-sacro);
+      padding: 5px 9px;
+      font-family: Bungee, system-ui, sans-serif;
+      font-size: 10px;
+      border: 2px solid var(--oro-sacro);
+      letter-spacing: .6px;
+    }
+
+    .combo-tag {
+      font-family: Bungee, system-ui, sans-serif;
+      font-size: 9px;
+      letter-spacing: .5px;
+      background: var(--rosso-mamma);
+      color: #fff;
+      padding: 3px 7px;
+      border: 2px solid var(--ink);
+      transform: rotate(2deg);
+      box-shadow: 2px 2px 0 var(--ink);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    .combo-tag.show {
+      opacity: 1;
+      animation: comboPop .35s ease-out;
+    }
+
+    @keyframes comboPop {
+      0% {
+        transform: rotate(2deg) scale(.4);
+      }
+
+      60% {
+        transform: rotate(2deg) scale(1.2);
+      }
+
+      100% {
+        transform: rotate(2deg) scale(1);
+      }
+    }
+
+    /* Thermometer */
+    .thermo {
+      position: absolute;
+      left: calc(8px + env(safe-area-inset-left, 0px));
+      top: calc(120px + env(safe-area-inset-top, 0px));
+      z-index: 6;
+      pointer-events: none;
+      width: 54px;
+      height: min(280px, 38dvh);
+      font-family: Bungee, system-ui, sans-serif;
+    }
+
+    .thermo-tube {
+      position: absolute;
+      left: 16px;
+      top: 0;
+      width: 22px;
+      height: calc(100% - 40px);
+      background: rgba(255, 255, 255, .18);
+      border: 2.5px solid var(--ink);
+      border-bottom: none;
+      border-radius: 11px 11px 0 0;
+      box-shadow: inset 2px 0 0 rgba(255, 255, 255, .4), inset -2px 0 0 rgba(0, 0, 0, .15);
+      overflow: hidden;
+    }
+
+    .thermo-bulb {
+      position: absolute;
+      left: 8px;
+      top: calc(100% - 40px);
+      width: 38px;
+      height: 38px;
+      background: var(--rosso-mamma);
+      border: 2.5px solid var(--ink);
+      border-radius: 50%;
+      box-shadow: inset 4px 4px 0 rgba(255, 255, 255, .35), 0 4px 12px rgba(255, 45, 74, .55);
+    }
+
+    .thermo-label {
+      position: absolute;
+      top: -28px;
+      left: 0;
+      transform: rotate(-2deg);
+      transform-origin: left center;
+      background: var(--ink);
+      color: var(--oro-sacro);
+      padding: 4px 8px;
+      font-size: 8px;
+      letter-spacing: .6px;
+      white-space: nowrap;
+      border: 2px solid var(--oro-sacro);
+      border-radius: 2px;
+      box-shadow: 0 2px 0 var(--oro-sacro);
+    }
+
+    .thermo-fill {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 0%;
+      background: linear-gradient(180deg, #ff2d4a 0%, #ff7e1a 45%, #ffd24c 80%, #6dc97a 100%);
+      transition: height .25s;
+      box-shadow: inset 2px 0 0 rgba(255, 255, 255, .5);
+    }
+
+    .thermo-tick {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 0;
+      border-top: 1.5px solid rgba(0, 0, 0, .5);
+    }
+
+    .thermo-bulb::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ff7e9a, #ff2d4a 60%);
+    }
+
+    .thermo.danger .thermo-bulb {
+      animation: bulbPulse .35s ease-in-out infinite;
+    }
+
+    @keyframes bulbPulse {
+      50% {
+        box-shadow: inset 4px 4px 0 rgba(255, 255, 255, .5), 0 0 18px #ff2d4a;
+      }
+    }
 
 
-  /* foods */
-  .food{
-    position:absolute;left:0;top:0;
-    width:64px;height:64px;
-    transform:translate(-50%,-50%);
-    pointer-events:none;will-change:transform;
-  }
-  .food .inner{
-    position:absolute;inset:0;
-    display:block;
-  }
-  .food.sinful{
-    filter:drop-shadow(0 4px 12px rgba(255,165,0,.55)) drop-shadow(0 0 8px gold);
-  }
-  .food.sinful .inner{
-    animation:sinfulPulse 1.2s ease-in-out infinite;
-    transform-origin:center center;
-  }
-  @keyframes sinfulPulse{
-    0%,100%{transform:scale(1);}
-    50%{transform:scale(1.08);}
-  }
-  .food.healthy{
-    filter:grayscale(.85) brightness(.9);
-    opacity:.9;
-  }
+    /* foods */
+    .food {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 64px;
+      height: 64px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      will-change: transform;
+    }
 
-  /* TURI player */
-  #turi{
-    position:absolute;
-    bottom:calc(80px + env(safe-area-inset-bottom, 0px));
-    left:50%;
-    width:clamp(96px, 30dvw, 140px);
-    aspect-ratio:130/170;
-    transform:translateX(-50%);
-    z-index:4;pointer-events:none;
-    transition:transform 0.05s linear;
-  }
-  #turi img{
-    width:100%;height:100%;object-fit:contain;
-    filter:drop-shadow(0 8px 0 rgba(0,0,0,.4));
-  }
-  #turi .mouth-glow{
-    position:absolute;top:14px;left:50%;transform:translateX(-50%);
-    width:38px;height:38px;border-radius:50%;
-    background:radial-gradient(circle,rgba(255,247,194,.7),transparent 70%);
-    opacity:0;transition:opacity .15s;
-  }
-  #turi.catching .mouth-glow{opacity:1;}
+    .food .inner {
+      position: absolute;
+      inset: 0;
+      display: block;
+    }
 
-  /* Petto Digitale FAB */
-  #petto-btn{
-    position:absolute;
-    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
-    right:calc(12px + env(safe-area-inset-right, 0px));
-    z-index:7;
-    width:64px;height:64px;border-radius:50%;
-    border:none;padding:0;cursor:pointer;
-    background:transparent;
-    font-family:Bungee,system-ui,sans-serif;
-  }
-  #petto-btn .ring{
-    position:absolute;inset:0;border-radius:50%;
-    background:conic-gradient(from -90deg,var(--oro-sacro) 0deg,var(--arancio-ragu) 120deg,var(--rosso-mamma) 240deg,var(--oro-sacro) 360deg);
-    box-shadow:0 0 24px rgba(255,210,76,.7),0 4px 0 var(--ink);
-    animation:pulse 1.4s ease-in-out infinite;
-  }
-  #petto-btn.cooling .ring{animation:none;box-shadow:0 4px 0 var(--ink);filter:saturate(.3) brightness(.6);}
-  #petto-btn .core{
-    position:absolute;inset:5px;border-radius:50%;
-    background:radial-gradient(circle at 35% 30%,#fff8c2,var(--oro-sacro) 50%,var(--arancio-ragu) 100%);
-    border:2.5px solid var(--ink);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-    color:var(--ink);
-  }
-  #petto-btn.cooling .core{filter:saturate(.3) brightness(.7);}
-  #petto-btn .core .label{font-size:7px;letter-spacing:.4px;}
-  #petto-btn .cd{
-    position:absolute;inset:5px;border-radius:50%;
-    background:rgba(0,0,0,.55);color:#fff;
-    display:none;align-items:center;justify-content:center;
-    font-family:Bungee,system-ui,sans-serif;font-size:18px;
-    border:2.5px solid var(--ink);
-  }
-  #petto-btn.cooling .cd{display:flex;}
-  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+    .food.sinful {
+      filter: drop-shadow(0 4px 12px rgba(255, 165, 0, .55)) drop-shadow(0 0 8px gold);
+    }
 
-  .petto-hint{
-    position:absolute;
-    bottom:calc(86px + env(safe-area-inset-bottom, 0px));
-    right:calc(18px + env(safe-area-inset-right, 0px));
-    z-index:6;
-    font-family:Bungee,system-ui,sans-serif;font-size:8px;
-    color:var(--oro-sacro);background:var(--ink);padding:3px 6px;
-    border:1.5px solid var(--oro-sacro);transform:rotate(-4deg);
-    pointer-events:none;
-  }
+    .food.sinful .inner {
+      animation: sinfulPulse 1.2s ease-in-out infinite;
+      transform-origin: center center;
+    }
 
-  /* Shockwave ring (Petto effect) */
-  .shockwave{
-    position:absolute;left:0;top:0;
-    width:40px;height:40px;border-radius:50%;
-    transform:translate(-50%,-50%);
-    border:5px solid var(--oro-sacro);
-    box-shadow:0 0 40px var(--oro-sacro),inset 0 0 20px var(--oro-sacro);
-    pointer-events:none;z-index:5;
-    animation:shockwave .9s ease-out forwards;
-  }
-  @keyframes shockwave{
-    0%{width:40px;height:40px;opacity:1;border-width:5px;}
-    100%{width:1100px;height:1100px;opacity:0;border-width:1px;}
-  }
+    @keyframes sinfulPulse {
 
-  /* Petto active pulse on body */
-  body.petto-on #game::after{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(circle at var(--turi-x,50%) var(--turi-y,80%),rgba(255,210,76,.18),transparent 60%);
-    z-index:3;animation:pettoGlow .35s ease-in-out infinite alternate;
-  }
-  @keyframes pettoGlow{from{opacity:.5}to{opacity:1}}
+      0%,
+      100% {
+        transform: scale(1);
+      }
 
-  /* Dolores */
-  #dolores{
-    position:absolute;left:0;bottom:170px;z-index:7;
-    transform:translateX(-110%);
-    transition:transform .45s cubic-bezier(.2,.7,.3,1.3);
-    pointer-events:none;
-    filter:drop-shadow(0 6px 0 rgba(0,0,0,.4));
-  }
-  #dolores.show{transform:translateX(0);}
-  #dolores img{
-    width:130px;height:auto;display:block;
-  }
-  #dolores .bubble{
-    position:absolute;left:90px;top:-30px;
-    background:#fff;color:var(--ink);
-    border:3px solid var(--ink);
-    padding:8px 12px;border-radius:8px;
-    font-family:Bungee,system-ui,sans-serif;
-    font-size:13px;letter-spacing:.4px;line-height:1.05;
-    transform:rotate(-3deg);
-    box-shadow:4px 4px 0 var(--rosso-mamma),4px 4px 0 3px var(--ink);
-    white-space:nowrap;
-    opacity:0;visibility:hidden;
-    transition:opacity .2s ease .15s, visibility 0s linear .35s;
-  }
-  #dolores.show .bubble{
-    opacity:1;visibility:visible;
-    transition:opacity .25s ease .25s, visibility 0s linear .25s;
-  }
-  #dolores .bubble svg{position:absolute;left:-4px;bottom:-14px;}
-  .alert-bar{
-    position:absolute;top:0;left:0;right:0;
-    background:var(--rosso-mamma);color:var(--ink);
-    padding:12px 14px;text-align:center;
-    font-family:Bungee,system-ui,sans-serif;font-size:18px;letter-spacing:2.5px;
-    border-bottom:4px solid var(--ink);
-    text-shadow:2px 2px 0 var(--oro-sacro);
-    z-index:8;
-    transform:translateY(-100%);transition:transform .3s;
-  }
-  .alert-bar.show{transform:translateY(0);}
+      50% {
+        transform: scale(1.08);
+      }
+    }
 
-  /* Floating score popups */
-  .popup{
-    position:absolute;pointer-events:none;z-index:5;
-    transform:translate(-50%,-50%);
-    font-family:Bungee,system-ui,sans-serif;font-size:14px;
-    text-shadow:2px 2px 0 var(--ink);
-    animation:popUp .85s ease-out forwards;
-    letter-spacing:.5px;
-  }
-  .popup.good{color:var(--oro-sacro);}
-  .popup.bad{color:#6dc97a;}
-  .popup.huge{font-size:22px;color:#fff;text-shadow:3px 3px 0 var(--rosso-mamma),5px 5px 0 var(--ink);}
-  @keyframes popUp{
-    0%{opacity:0;transform:translate(-50%,-50%) scale(.5);}
-    20%{opacity:1;transform:translate(-50%,-70%) scale(1.1);}
-    100%{opacity:0;transform:translate(-50%,-160%) scale(.9);}
-  }
+    .food.healthy {
+      filter: grayscale(.85) brightness(.9);
+      opacity: .9;
+    }
 
-  /* ── TITLE SCREEN ── */
-  .screen{
-    position:absolute;inset:0;z-index:20;
-    display:flex;flex-direction:column;align-items:center;
-    overflow:hidden;
-    padding:calc(env(safe-area-inset-top, 0px) + 12px)
-            calc(env(safe-area-inset-right, 0px) + 12px)
-            calc(env(safe-area-inset-bottom, 0px) + 12px)
-            calc(env(safe-area-inset-left, 0px) + 12px);
-  }
-  #screen-title{
-    background:radial-gradient(ellipse at 50% 30%,#ffd24c 0%,#ff7e1a 40%,#c9302a 75%,#5a0e0a 100%);
-    justify-content:space-between;
-  }
-  .tag-chip{
-    font-family:Bungee,system-ui;font-size:11px;letter-spacing:2px;
-    color:var(--ink);background:var(--oro-sacro);
-    padding:4px 12px;border:2px solid var(--ink);
-    transform:rotate(-2deg);box-shadow:3px 3px 0 var(--ink);
-  }
-  .logo-big{
-    margin-top:clamp(6px, 1.5dvh, 18px);
-    font-family:"Bungee Shade","Bungee",sans-serif;
-    font-size:clamp(54px, 11dvh, 84px);
-    line-height:.85;color:var(--oro-sacro);
-    text-shadow:5px 5px 0 var(--ink),-2px -2px 0 var(--rosso-mamma);
-    transform:rotate(-3deg);letter-spacing:-2px;
-  }
-  .logo-sub{
-    margin-top:6px;font-family:Bungee,sans-serif;
-    font-size:clamp(13px, 2.4dvh, 18px);
-    color:var(--crema);line-height:1.05;text-align:center;
-    text-shadow:3px 3px 0 var(--ink);letter-spacing:.5px;
-  }
-  .turi-hero{
-    position:relative;
-    margin-top:clamp(4px, 1dvh, 10px);
-    width:min(58%, 220px);
-    aspect-ratio:1/1.27;
-    flex:0 1 auto;
-    max-height:38dvh;
-  }
-  .turi-hero img{object-fit:contain;}
-  .turi-hero img{
-    position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
-    filter:drop-shadow(0 12px 0 rgba(0,0,0,.35));
-  }
-  .turi-hero::before{
-    content:"";position:absolute;inset:-10%;border-radius:50%;
-    background:radial-gradient(circle,rgba(255,247,194,.6),transparent 60%);
-    z-index:-1;animation:auraSpin 8s linear infinite;
-  }
-  @keyframes auraSpin{to{transform:rotate(360deg);}}
-  .cta{
-    margin-top:clamp(8px, 1.5dvh, 16px);
-    padding:clamp(10px, 1.6dvh, 14px) 28px;border:3px solid var(--ink);
-    background:var(--oro-sacro);color:var(--ink);
-    font-family:Bungee,sans-serif;font-size:clamp(15px, 2.2dvh, 18px);letter-spacing:1px;
-    box-shadow:0 6px 0 var(--ink),0 6px 0 3px var(--rosso-mamma);
-    border-radius:6px;cursor:pointer;
-  }
-  .cta:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink),0 2px 0 3px var(--rosso-mamma);}
-  .record{
-    margin-top:clamp(6px, 1.2dvh, 14px);
-    font-size:10px;opacity:.8;font-family:Bungee,sans-serif;letter-spacing:1px;color:var(--crema);
-  }
+    /* TURI player */
+    #turi {
+      position: absolute;
+      bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      width: clamp(96px, 30dvw, 140px);
+      aspect-ratio: 130/170;
+      transform: translateX(-50%);
+      z-index: 4;
+      pointer-events: none;
+      transition: transform 0.05s linear;
+    }
 
-  /* ── GAME OVER SCREEN ── */
-  #screen-gameover{
-    background:radial-gradient(ellipse at 50% 50%,#4a3a2a 0%,#2a1a1f 60%,#0a0606 100%);
-    display:none;
-    align-items:center;
-    justify-content:flex-start;
-    gap:clamp(6px, 1.2dvh, 14px);
-  }
-  #screen-gameover.show{display:flex;}
-  .sick-aura{
-    position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(120,160,80,.35),transparent 60%);pointer-events:none;
-  }
-  .stamp{
-    display:inline-block;
-    font-family:"Bungee Shade",Bungee,sans-serif;
-    font-size:clamp(16px, 2.4dvh, 20px);
-    color:var(--rosso-mamma);letter-spacing:4px;
-    transform:rotate(-3deg);padding:4px 14px;
-    border:4px solid var(--rosso-mamma);
-    text-shadow:2px 2px 0 var(--ink);
-  }
-  .sick-turi{
-    position:relative;
-    width:min(60%, 240px);
-    aspect-ratio:1/1.32;
-    flex:0 1 auto;
-    max-height:32dvh;
-  }
-  .sick-turi img{object-fit:contain;}
-  .sick-turi img{
-    position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
-    filter:drop-shadow(0 8px 0 rgba(0,0,0,.5));
-  }
-  .sick-turi .glow-stars{position:absolute;top:-12px;left:50%;transform:translateX(-50%);}
-  .sick-turi .sweat{position:absolute;font-size:22px;}
-  .gameover-title{text-align:center;}
-  .gameover-title .top{
-    font-family:"Bungee Shade",Bungee,sans-serif;
-    font-size:clamp(22px, 3.6dvh, 30px);
-    line-height:.9;color:var(--oro-sacro);
-    text-shadow:4px 4px 0 var(--ink);transform:rotate(-2deg);letter-spacing:.5px;
-  }
-  .gameover-title .bot{
-    margin-top:4px;font-family:Bungee,sans-serif;
-    font-size:clamp(34px, 5.5dvh, 46px);
-    line-height:.9;color:#fff;
-    text-shadow:5px 5px 0 var(--rosso-mamma),8px 8px 0 var(--ink);
-    transform:rotate(-1deg);letter-spacing:-1px;
-  }
-  .scorecard{
-    background:var(--ink);border:3px solid var(--oro-sacro);
-    padding:clamp(6px, 1.2dvh, 10px) 14px;
-    display:grid;grid-template-columns:1fr 1fr;gap:clamp(2px, .6dvh, 6px) 12px;
-    font-family:Bungee,sans-serif;
-    width:min(100% - 24px, 340px);
-    box-sizing:border-box;
-  }
-  .scorecard .k{font-size:8px;color:var(--oro-sacro);opacity:.85;letter-spacing:.5px;}
-  .scorecard .v{font-size:clamp(15px, 2.5dvh, 20px);letter-spacing:1px;color:#fff;}
-  .scorecard .v.kcal{color:var(--arancio-ragu);}
-  .scorecard .v.bad{color:var(--rosso-mamma);}
-  .restart{
-    width:min(100% - 24px, 340px);
-    padding:clamp(10px, 1.6dvh, 14px) 16px;
-    background:var(--oro-sacro);color:var(--ink);
-    border:3px solid var(--ink);
-    font-family:Bungee,sans-serif;font-size:clamp(15px, 2.2dvh, 18px);letter-spacing:1px;
-    box-shadow:0 6px 0 var(--rosso-mamma),0 6px 0 3px var(--ink);
-    border-radius:6px;cursor:pointer;
-  }
-  .restart:active{transform:translateY(4px);box-shadow:0 2px 0 var(--rosso-mamma),0 2px 0 3px var(--ink);}
-  .footer-msg{
-    margin-top:auto;padding:clamp(8px, 1.2dvh, 14px) 16px clamp(6px, 1dvh, 12px);
-    text-align:center;font-family:Bungee,sans-serif;
-    font-size:clamp(13px, 2dvh, 16px);
-    color:var(--oro-sacro);opacity:.95;letter-spacing:.8px;line-height:1.35;
-    text-shadow:2px 2px 0 var(--ink);
-  }
-  .footer-msg .small{font-size:clamp(10px, 1.5dvh, 12px);opacity:.8;display:block;margin-top:4px;}
+    #turi img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 0 rgba(0, 0, 0, .4));
+    }
 
-  /* confetti / sparkles on title */
-  .confetti-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55;}
+    #turi .mouth-glow {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 247, 194, .7), transparent 70%);
+      opacity: 0;
+      transition: opacity .15s;
+    }
 
-  /* mute toggle — sits below the HUD top row so it never covers the timer */
-  #mute-btn{
-    position:fixed;
-    top:calc(120px + env(safe-area-inset-top, 0px));
-    right:calc(10px + env(safe-area-inset-right, 0px));
-    z-index:30;
-    width:34px;height:34px;border-radius:50%;
-    background:rgba(26,6,6,.7);color:var(--oro-sacro);
-    border:2px solid var(--oro-sacro);
-    font:700 16px/1 Bungee, system-ui, sans-serif;
-    cursor:pointer;padding:0;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 2px 0 var(--ink);
-  }
-  #mute-btn.muted{color:#888;border-color:#888;text-decoration:line-through;}
+    #turi.catching .mouth-glow {
+      opacity: 1;
+    }
 
-  /* hide game HUD when not playing */
-  body:not(.playing) .hud-top,
-  body:not(.playing) .thermo,
-  body:not(.playing) #petto-btn,
-  body:not(.playing) .petto-hint,
-  body:not(.playing) #turi{display:none;}
-  body.playing #screen-title{display:none;}
-</style>
+    /* Petto Digitale FAB */
+    #petto-btn {
+      position: absolute;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      right: calc(12px + env(safe-area-inset-right, 0px));
+      z-index: 7;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background: transparent;
+      font-family: Bungee, system-ui, sans-serif;
+    }
+
+    #petto-btn .ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(from -90deg, var(--oro-sacro) 0deg, var(--arancio-ragu) 120deg, var(--rosso-mamma) 240deg, var(--oro-sacro) 360deg);
+      box-shadow: 0 0 24px rgba(255, 210, 76, .7), 0 4px 0 var(--ink);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    #petto-btn.cooling .ring {
+      animation: none;
+      box-shadow: 0 4px 0 var(--ink);
+      filter: saturate(.3) brightness(.6);
+    }
+
+    #petto-btn .core {
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff8c2, var(--oro-sacro) 50%, var(--arancio-ragu) 100%);
+      border: 2.5px solid var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      color: var(--ink);
+    }
+
+    #petto-btn.cooling .core {
+      filter: saturate(.3) brightness(.7);
+    }
+
+    #petto-btn .core .label {
+      font-size: 7px;
+      letter-spacing: .4px;
+    }
+
+    #petto-btn .cd {
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .55);
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-family: Bungee, system-ui, sans-serif;
+      font-size: 18px;
+      border: 2.5px solid var(--ink);
+    }
+
+    #petto-btn.cooling .cd {
+      display: flex;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.06);
+      }
+    }
+
+    .petto-hint {
+      position: absolute;
+      bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+      right: calc(18px + env(safe-area-inset-right, 0px));
+      z-index: 6;
+      font-family: Bungee, system-ui, sans-serif;
+      font-size: 8px;
+      color: var(--oro-sacro);
+      background: var(--ink);
+      padding: 3px 6px;
+      border: 1.5px solid var(--oro-sacro);
+      transform: rotate(-4deg);
+      pointer-events: none;
+    }
+
+    /* Shockwave ring (Petto effect) */
+    .shockwave {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: 5px solid var(--oro-sacro);
+      box-shadow: 0 0 40px var(--oro-sacro), inset 0 0 20px var(--oro-sacro);
+      pointer-events: none;
+      z-index: 5;
+      animation: shockwave .9s ease-out forwards;
+    }
+
+    @keyframes shockwave {
+      0% {
+        width: 40px;
+        height: 40px;
+        opacity: 1;
+        border-width: 5px;
+      }
+
+      100% {
+        width: 1100px;
+        height: 1100px;
+        opacity: 0;
+        border-width: 1px;
+      }
+    }
+
+    /* Petto active pulse on body */
+    body.petto-on #game::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at var(--turi-x, 50%) var(--turi-y, 80%), rgba(255, 210, 76, .18), transparent 60%);
+      z-index: 3;
+      animation: pettoGlow .35s ease-in-out infinite alternate;
+    }
+
+    @keyframes pettoGlow {
+      from {
+        opacity: .5
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    /* Dolores */
+    #dolores {
+      position: absolute;
+      left: 0;
+      bottom: 170px;
+      z-index: 7;
+      transform: translateX(-110%);
+      transition: transform .45s cubic-bezier(.2, .7, .3, 1.3);
+      pointer-events: none;
+      filter: drop-shadow(0 6px 0 rgba(0, 0, 0, .4));
+    }
+
+    #dolores.show {
+      transform: translateX(0);
+    }
+
+    #dolores img {
+      width: 130px;
+      height: auto;
+      display: block;
+    }
+
+    #dolores .bubble {
+      position: absolute;
+      left: 90px;
+      top: -30px;
+      background: #fff;
+      color: var(--ink);
+      border: 3px solid var(--ink);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: Bungee, system-ui, sans-serif;
+      font-size: 13px;
+      letter-spacing: .4px;
+      line-height: 1.05;
+      transform: rotate(-3deg);
+      box-shadow: 4px 4px 0 var(--rosso-mamma), 4px 4px 0 3px var(--ink);
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s ease .15s, visibility 0s linear .35s;
+    }
+
+    #dolores.show .bubble {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .25s ease .25s, visibility 0s linear .25s;
+    }
+
+    #dolores .bubble svg {
+      position: absolute;
+      left: -4px;
+      bottom: -14px;
+    }
+
+    .alert-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--rosso-mamma);
+      color: var(--ink);
+      padding: 12px 14px;
+      text-align: center;
+      font-family: Bungee, system-ui, sans-serif;
+      font-size: 18px;
+      letter-spacing: 2.5px;
+      border-bottom: 4px solid var(--ink);
+      text-shadow: 2px 2px 0 var(--oro-sacro);
+      z-index: 8;
+      transform: translateY(-100%);
+      transition: transform .3s;
+    }
+
+    .alert-bar.show {
+      transform: translateY(0);
+    }
+
+    /* Floating score popups */
+    .popup {
+      position: absolute;
+      pointer-events: none;
+      z-index: 5;
+      transform: translate(-50%, -50%);
+      font-family: Bungee, system-ui, sans-serif;
+      font-size: 14px;
+      text-shadow: 2px 2px 0 var(--ink);
+      animation: popUp .85s ease-out forwards;
+      letter-spacing: .5px;
+    }
+
+    .popup.good {
+      color: var(--oro-sacro);
+    }
+
+    .popup.bad {
+      color: #6dc97a;
+    }
+
+    .popup.huge {
+      font-size: 22px;
+      color: #fff;
+      text-shadow: 3px 3px 0 var(--rosso-mamma), 5px 5px 0 var(--ink);
+    }
+
+    @keyframes popUp {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.5);
+      }
+
+      20% {
+        opacity: 1;
+        transform: translate(-50%, -70%) scale(1.1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -160%) scale(.9);
+      }
+    }
+
+    /* ── TITLE SCREEN ── */
+    .screen {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      padding: calc(env(safe-area-inset-top, 0px) + 12px) calc(env(safe-area-inset-right, 0px) + 12px) calc(env(safe-area-inset-bottom, 0px) + 12px) calc(env(safe-area-inset-left, 0px) + 12px);
+    }
+
+    #screen-title {
+      background: radial-gradient(ellipse at 50% 30%, #ffd24c 0%, #ff7e1a 40%, #c9302a 75%, #5a0e0a 100%);
+      justify-content: space-between;
+    }
+
+    .tag-chip {
+      font-family: Bungee, system-ui;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--ink);
+      background: var(--oro-sacro);
+      padding: 4px 12px;
+      border: 2px solid var(--ink);
+      transform: rotate(-2deg);
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+
+    .logo-big {
+      margin-top: clamp(6px, 1.5dvh, 18px);
+      font-family: "Bungee Shade", "Bungee", sans-serif;
+      font-size: clamp(54px, 11dvh, 84px);
+      line-height: .85;
+      color: var(--oro-sacro);
+      text-shadow: 5px 5px 0 var(--ink), -2px -2px 0 var(--rosso-mamma);
+      transform: rotate(-3deg);
+      letter-spacing: -2px;
+    }
+
+    .logo-sub {
+      margin-top: 6px;
+      font-family: Bungee, sans-serif;
+      font-size: clamp(13px, 2.4dvh, 18px);
+      color: var(--crema);
+      line-height: 1.05;
+      text-align: center;
+      text-shadow: 3px 3px 0 var(--ink);
+      letter-spacing: .5px;
+    }
+
+    .turi-hero {
+      position: relative;
+      margin-top: clamp(4px, 1dvh, 10px);
+      width: min(58%, 220px);
+      aspect-ratio: 1/1.27;
+      flex: 0 1 auto;
+      max-height: 38dvh;
+    }
+
+    .turi-hero img {
+      object-fit: contain;
+    }
+
+    .turi-hero img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 0 rgba(0, 0, 0, .35));
+    }
+
+    .turi-hero::before {
+      content: "";
+      position: absolute;
+      inset: -10%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 247, 194, .6), transparent 60%);
+      z-index: -1;
+      animation: auraSpin 8s linear infinite;
+    }
+
+    @keyframes auraSpin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .cta {
+      margin-top: clamp(8px, 1.5dvh, 16px);
+      padding: clamp(10px, 1.6dvh, 14px) 28px;
+      border: 3px solid var(--ink);
+      background: var(--oro-sacro);
+      color: var(--ink);
+      font-family: Bungee, sans-serif;
+      font-size: clamp(15px, 2.2dvh, 18px);
+      letter-spacing: 1px;
+      box-shadow: 0 6px 0 var(--ink), 0 6px 0 3px var(--rosso-mamma);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .cta:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 var(--ink), 0 2px 0 3px var(--rosso-mamma);
+    }
+
+    .record {
+      margin-top: clamp(6px, 1.2dvh, 14px);
+      font-size: 10px;
+      opacity: .8;
+      font-family: Bungee, sans-serif;
+      letter-spacing: 1px;
+      color: var(--crema);
+    }
+
+    /* ── GAME OVER SCREEN ── */
+    #screen-gameover {
+      background: radial-gradient(ellipse at 50% 50%, #4a3a2a 0%, #2a1a1f 60%, #0a0606 100%);
+      display: none;
+      align-items: center;
+      justify-content: flex-start;
+      gap: clamp(6px, 1.2dvh, 14px);
+    }
+
+    #screen-gameover.show {
+      display: flex;
+    }
+
+    .sick-aura {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 45%, rgba(120, 160, 80, .35), transparent 60%);
+      pointer-events: none;
+    }
+
+    .stamp {
+      display: inline-block;
+      font-family: "Bungee Shade", Bungee, sans-serif;
+      font-size: clamp(16px, 2.4dvh, 20px);
+      color: var(--rosso-mamma);
+      letter-spacing: 4px;
+      transform: rotate(-3deg);
+      padding: 4px 14px;
+      border: 4px solid var(--rosso-mamma);
+      text-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .sick-turi {
+      position: relative;
+      width: min(60%, 240px);
+      aspect-ratio: 1/1.32;
+      flex: 0 1 auto;
+      max-height: 32dvh;
+    }
+
+    .sick-turi img {
+      object-fit: contain;
+    }
+
+    .sick-turi img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 0 rgba(0, 0, 0, .5));
+    }
+
+    .sick-turi .glow-stars {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .sick-turi .sweat {
+      position: absolute;
+      font-size: 22px;
+    }
+
+    .gameover-title {
+      text-align: center;
+    }
+
+    .gameover-title .top {
+      font-family: "Bungee Shade", Bungee, sans-serif;
+      font-size: clamp(22px, 3.6dvh, 30px);
+      line-height: .9;
+      color: var(--oro-sacro);
+      text-shadow: 4px 4px 0 var(--ink);
+      transform: rotate(-2deg);
+      letter-spacing: .5px;
+    }
+
+    .gameover-title .bot {
+      margin-top: 4px;
+      font-family: Bungee, sans-serif;
+      font-size: clamp(34px, 5.5dvh, 46px);
+      line-height: .9;
+      color: #fff;
+      text-shadow: 5px 5px 0 var(--rosso-mamma), 8px 8px 0 var(--ink);
+      transform: rotate(-1deg);
+      letter-spacing: -1px;
+    }
+
+    .scorecard {
+      background: var(--ink);
+      border: 3px solid var(--oro-sacro);
+      padding: clamp(6px, 1.2dvh, 10px) 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2px, .6dvh, 6px) 12px;
+      font-family: Bungee, sans-serif;
+      width: min(100% - 24px, 340px);
+      box-sizing: border-box;
+    }
+
+    .scorecard .k {
+      font-size: 8px;
+      color: var(--oro-sacro);
+      opacity: .85;
+      letter-spacing: .5px;
+    }
+
+    .scorecard .v {
+      font-size: clamp(15px, 2.5dvh, 20px);
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    .scorecard .v.kcal {
+      color: var(--arancio-ragu);
+    }
+
+    .scorecard .v.bad {
+      color: var(--rosso-mamma);
+    }
+
+    .restart {
+      width: min(100% - 24px, 340px);
+      padding: clamp(10px, 1.6dvh, 14px) 16px;
+      background: var(--oro-sacro);
+      color: var(--ink);
+      border: 3px solid var(--ink);
+      font-family: Bungee, sans-serif;
+      font-size: clamp(15px, 2.2dvh, 18px);
+      letter-spacing: 1px;
+      box-shadow: 0 6px 0 var(--rosso-mamma), 0 6px 0 3px var(--ink);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .restart:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 var(--rosso-mamma), 0 2px 0 3px var(--ink);
+    }
+
+    .footer-msg {
+      margin-top: auto;
+      padding: clamp(8px, 1.2dvh, 14px) 16px clamp(6px, 1dvh, 12px);
+      text-align: center;
+      font-family: Bungee, sans-serif;
+      font-size: clamp(13px, 2dvh, 16px);
+      color: var(--oro-sacro);
+      opacity: .95;
+      letter-spacing: .8px;
+      line-height: 1.35;
+      text-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .footer-msg .small {
+      font-size: clamp(10px, 1.5dvh, 12px);
+      opacity: .8;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* confetti / sparkles on title */
+    .confetti-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: .55;
+    }
+
+    /* mute toggle — sits below the HUD top row so it never covers the timer */
+    #mute-btn {
+      position: fixed;
+      top: calc(120px + env(safe-area-inset-top, 0px));
+      right: calc(10px + env(safe-area-inset-right, 0px));
+      z-index: 30;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(26, 6, 6, .7);
+      color: var(--oro-sacro);
+      border: 2px solid var(--oro-sacro);
+      font: 700 16px/1 Bungee, system-ui, sans-serif;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    #mute-btn.muted {
+      color: #888;
+      border-color: #888;
+      text-decoration: line-through;
+    }
+
+    /* hide game HUD when not playing */
+    body:not(.playing) .hud-top,
+    body:not(.playing) .thermo,
+    body:not(.playing) #petto-btn,
+    body:not(.playing) .petto-hint,
+    body:not(.playing) #turi {
+      display: none;
+    }
+
+    body.playing #screen-title {
+      display: none;
+    }
+  </style>
 </head>
+
 <body>
-<audio id="bgm" src="assets/song.mp3" loop preload="auto" playsinline></audio>
-<button id="mute-btn" aria-label="Audio on/off">♪</button>
-<div id="stage">
-  <div id="game">
+  <audio id="bgm" src="assets/song.mp3" loop preload="auto" playsinline></audio>
+  <button id="mute-btn" aria-label="Audio on/off">♪</button>
+  <div id="stage">
+    <div id="game">
 
-    <!-- backdrops -->
-    <div class="stripes"></div>
-    <div class="danger-tint"></div>
+      <!-- backdrops -->
+      <div class="stripes"></div>
+      <div class="danger-tint"></div>
 
-    <!-- TITLE SCREEN -->
-    <div id="screen-title" class="screen">
-      <svg class="confetti-svg" viewBox="0 0 100 100" preserveAspectRatio="none" id="confetti-svg"></svg>
-      <div class="tag-chip">UN GIOCO PER I 62 ANNI DI</div>
-      <div class="logo-big">TURI</div>
-      <div class="logo-sub">LA DIETA<br>DELL'IPOCRITA</div>
-      <div class="turi-hero">
-        <img src="assets/turi_active.png" alt="Turi"/>
+      <!-- TITLE SCREEN -->
+      <div id="screen-title" class="screen">
+        <svg class="confetti-svg" viewBox="0 0 100 100" preserveAspectRatio="none" id="confetti-svg"></svg>
+        <div class="tag-chip">UN GIOCO PER I 62 ANNI DI</div>
+        <div class="logo-big">TURI</div>
+        <div class="logo-sub">LA DIETA<br>DELL'IPOCRITA</div>
+        <div class="turi-hero">
+          <img src="assets/turi_active.png" alt="Turi" />
+        </div>
+        <button class="cta" id="start-btn">INIZIA LO STRAVIZIO ▸</button>
+        <div class="record" id="title-record">RECORD: 0 KCAL</div>
       </div>
-      <button class="cta" id="start-btn">INIZIA LO STRAVIZIO ▸</button>
-      <div class="record" id="title-record">RECORD: 0 KCAL</div>
-    </div>
 
-    <!-- HUD: top -->
-    <div class="hud-top">
-      <div class="score">
-        <div class="score-label">CALORIE CLANDESTINE</div>
-        <div class="score-box">
-          <span class="score-num" id="score-num">00.000</span>
-          <span class="score-unit">kcal</span>
+      <!-- HUD: top -->
+      <div class="hud-top">
+        <div class="score">
+          <div class="score-label">CALORIE CLANDESTINE</div>
+          <div class="score-box">
+            <span class="score-num" id="score-num">00.000</span>
+            <span class="score-unit">kcal</span>
+          </div>
+        </div>
+        <div class="top-right">
+          <div class="combo-tag" id="combo-tag">×2 COMBO!</div>
+          <div class="round-tag" id="round-tag">⏱ 0:00</div>
         </div>
       </div>
-      <div class="top-right">
-        <div class="combo-tag" id="combo-tag">×2 COMBO!</div>
-        <div class="round-tag" id="round-tag">⏱ 0:00</div>
+
+      <!-- Thermometer -->
+      <div class="thermo" id="thermo">
+        <div class="thermo-label">LIVELLO INDIGESTIONE</div>
+        <div class="thermo-tube">
+          <div class="thermo-fill" id="thermo-fill"></div>
+          <div class="thermo-tick" style="top:20%"></div>
+          <div class="thermo-tick" style="top:40%"></div>
+          <div class="thermo-tick" style="top:60%"></div>
+          <div class="thermo-tick" style="top:80%"></div>
+        </div>
+        <div class="thermo-bulb"></div>
       </div>
+
+      <!-- Petto Digitale FAB -->
+      <button id="petto-btn" aria-label="Petto Digitale">
+        <span class="ring"></span>
+        <span class="core">
+          <svg width="34" height="22" viewBox="0 0 34 22">
+            <g fill="none" stroke="#1a0606" stroke-width="2.4" stroke-linecap="round">
+              <path d="M4 11 Q9 4 14 11 Q9 18 4 11" />
+              <path d="M14 11 Q19 4 24 11 Q19 18 14 11" />
+              <path d="M24 11 Q29 6 32 11 Q29 16 24 11" />
+            </g>
+            <circle cx="3" cy="11" r="2" fill="#1a0606" />
+          </svg>
+          <span class="label">PETTO!</span>
+        </span>
+        <span class="cd" id="petto-cd">0</span>
+      </button>
+      <div class="petto-hint">2× TAP</div>
+
+      <!-- Alert bar (Dolores) -->
+      <div class="alert-bar" id="alert-bar">⚠ MAMMA IN VISTA · RISCHIO 5× ⚠</div>
+
+      <!-- Dolores -->
+      <div id="dolores">
+        <div class="bubble">
+          TURI,<br>TI HO VISTO!
+          <svg width="22" height="22" viewBox="0 0 22 22">
+            <path d="M2 0 L20 4 L8 20 Z" fill="#fff" stroke="#1a0606" stroke-width="3" />
+          </svg>
+        </div>
+        <img src="assets/dolores.png" alt="Dolores" />
+      </div>
+
+      <!-- Player -->
+      <div id="turi">
+        <div class="mouth-glow"></div>
+        <img src="assets/turi_active.png" alt="Turi" id="turi-img" />
+      </div>
+
+      <!-- foods + popups injected here -->
+      <div id="playfield" style="position:absolute;inset:0;z-index:3;pointer-events:none;"></div>
+
+      <!-- GAME OVER -->
+      <div id="screen-gameover" class="screen">
+        <div class="sick-aura"></div>
+        <div class="stamp">FINE PARTITA</div>
+        <div class="sick-turi">
+          <svg class="glow-stars" width="120" height="40" viewBox="0 0 120 40">
+            <g fill="#ffd24c" stroke="#1a0606" stroke-width="1.5">
+              <path d="M14 16 L18 6 L22 16 L32 18 L22 22 L18 32 L14 22 L4 18 Z" />
+              <path d="M58 8 L62 0 L66 8 L72 10 L66 12 L62 18 L58 12 L52 10 Z" transform="scale(.8) translate(15 6)" />
+              <path d="M96 16 L100 6 L104 16 L114 18 L104 22 L100 32 L96 22 L86 18 Z" />
+            </g>
+          </svg>
+          <div class="sweat" style="top:14px;left:10%">💦</div>
+          <div class="sweat" style="top:6px;right:15%">🤢</div>
+          <img src="assets/turi_sick.png" alt="Turi malato" />
+        </div>
+        <div class="gameover-title">
+          <div class="top">TI SERVE UN</div>
+          <div class="bot">BICARBONATO!</div>
+        </div>
+        <div class="scorecard">
+          <div>
+            <div class="k">CALORIE CLANDESTINE</div>
+            <div class="v kcal" id="go-kcal">0</div>
+          </div>
+          <div>
+            <div class="k">PECCATI</div>
+            <div class="v" id="go-sins">0 ▾</div>
+          </div>
+          <div>
+            <div class="k">VIRTÙ</div>
+            <div class="v" id="go-virtues">0 ▾</div>
+          </div>
+          <div>
+            <div class="k">VISTO DA MAMMA</div>
+            <div class="v bad" id="go-mamma">0×</div>
+          </div>
+        </div>
+        <button class="restart" id="restart-btn">RICOMINCIA LA DIETA ↻</button>
+        <div class="footer-msg">
+          AUGURI TURI! 62 ANNI E NON SENTIRLI<br>
+          <span class="small">(TRANNE NELLO STOMACO)</span>
+        </div>
+      </div>
+
     </div>
-
-    <!-- Thermometer -->
-    <div class="thermo" id="thermo">
-      <div class="thermo-label">LIVELLO INDIGESTIONE</div>
-      <div class="thermo-tube">
-        <div class="thermo-fill" id="thermo-fill"></div>
-        <div class="thermo-tick" style="top:20%"></div>
-        <div class="thermo-tick" style="top:40%"></div>
-        <div class="thermo-tick" style="top:60%"></div>
-        <div class="thermo-tick" style="top:80%"></div>
-      </div>
-      <div class="thermo-bulb"></div>
-    </div>
-
-    <!-- Petto Digitale FAB -->
-    <button id="petto-btn" aria-label="Petto Digitale">
-      <span class="ring"></span>
-      <span class="core">
-        <svg width="34" height="22" viewBox="0 0 34 22">
-          <g fill="none" stroke="#1a0606" stroke-width="2.4" stroke-linecap="round">
-            <path d="M4 11 Q9 4 14 11 Q9 18 4 11"/>
-            <path d="M14 11 Q19 4 24 11 Q19 18 14 11"/>
-            <path d="M24 11 Q29 6 32 11 Q29 16 24 11"/>
-          </g>
-          <circle cx="3" cy="11" r="2" fill="#1a0606"/>
-        </svg>
-        <span class="label">PETTO!</span>
-      </span>
-      <span class="cd" id="petto-cd">0</span>
-    </button>
-    <div class="petto-hint">2× TAP</div>
-
-    <!-- Alert bar (Dolores) -->
-    <div class="alert-bar" id="alert-bar">⚠ MAMMA IN VISTA · RISCHIO 5× ⚠</div>
-
-    <!-- Dolores -->
-    <div id="dolores">
-      <div class="bubble">
-        TURI,<br>TI HO VISTO!
-        <svg width="22" height="22" viewBox="0 0 22 22"><path d="M2 0 L20 4 L8 20 Z" fill="#fff" stroke="#1a0606" stroke-width="3"/></svg>
-      </div>
-      <img src="assets/dolores.png" alt="Dolores"/>
-    </div>
-
-    <!-- Player -->
-    <div id="turi">
-      <div class="mouth-glow"></div>
-      <img src="assets/turi_active.png" alt="Turi" id="turi-img"/>
-    </div>
-
-    <!-- foods + popups injected here -->
-    <div id="playfield" style="position:absolute;inset:0;z-index:3;pointer-events:none;"></div>
-
-    <!-- GAME OVER -->
-    <div id="screen-gameover" class="screen">
-      <div class="sick-aura"></div>
-      <div class="stamp">FINE PARTITA</div>
-      <div class="sick-turi">
-        <svg class="glow-stars" width="120" height="40" viewBox="0 0 120 40">
-          <g fill="#ffd24c" stroke="#1a0606" stroke-width="1.5">
-            <path d="M14 16 L18 6 L22 16 L32 18 L22 22 L18 32 L14 22 L4 18 Z"/>
-            <path d="M58 8 L62 0 L66 8 L72 10 L66 12 L62 18 L58 12 L52 10 Z" transform="scale(.8) translate(15 6)"/>
-            <path d="M96 16 L100 6 L104 16 L114 18 L104 22 L100 32 L96 22 L86 18 Z"/>
-          </g>
-        </svg>
-        <div class="sweat" style="top:14px;left:10%">💦</div>
-        <div class="sweat" style="top:6px;right:15%">🤢</div>
-        <img src="assets/turi_sick.png" alt="Turi malato"/>
-      </div>
-      <div class="gameover-title">
-        <div class="top">TI SERVE UN</div>
-        <div class="bot">BICARBONATO!</div>
-      </div>
-      <div class="scorecard">
-        <div><div class="k">CALORIE CLANDESTINE</div><div class="v kcal" id="go-kcal">0</div></div>
-        <div><div class="k">PECCATI</div><div class="v" id="go-sins">0 ▾</div></div>
-        <div><div class="k">VIRTÙ</div><div class="v" id="go-virtues">0 ▾</div></div>
-        <div><div class="k">VISTO DA MAMMA</div><div class="v bad" id="go-mamma">0×</div></div>
-      </div>
-      <button class="restart" id="restart-btn">RICOMINCIA LA DIETA ↻</button>
-      <div class="footer-msg">
-        AUGURI TURI! 62 ANNI E NON SENTIRLI<br>
-        <span class="small">(TRANNE NELLO STOMACO)</span>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<script>
-//──────────────────────────────────────────────────────────
-// SVG sprites — sinful + healthy. Returned as strings
-// inserted into food DOM nodes when spawned.
-//──────────────────────────────────────────────────────────
-const SVG_HALO = `
+  <script>
+    //──────────────────────────────────────────────────────────
+    // SVG sprites — sinful + healthy. Returned as strings
+    // inserted into food DOM nodes when spawned.
+    //──────────────────────────────────────────────────────────
+    const SVG_HALO = `
 <svg viewBox="0 0 100 100" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;">
   <defs>
     <radialGradient id="halo-grad" cx="50%" cy="50%" r="50%">
@@ -713,8 +1216,8 @@ const SVG_HALO = `
   </g>
 </svg>`;
 
-const SPRITES = {
-  parmigiano:`<svg viewBox="0 0 80 80" style="width:100%;height:100%;position:relative;z-index:1">
+    const SPRITES = {
+      parmigiano: `<svg viewBox="0 0 80 80" style="width:100%;height:100%;position:relative;z-index:1">
     <ellipse cx="40" cy="68" rx="28" ry="4" fill="#7a3d00" opacity=".25"/>
     <path d="M14 44 L20 18 L58 14 L70 30 L66 60 L48 66 L20 62 Z" fill="#f4c542" stroke="#8a4a00" stroke-width="2.2" stroke-linejoin="round"/>
     <path d="M20 18 L58 14 L70 30" fill="none" stroke="#fff4a8" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
@@ -726,7 +1229,7 @@ const SPRITES = {
     <circle cx="28" cy="50" r="1.4" fill="#fff8c2"/>
     <path d="M52 22 L54 26 L52 30 L50 26 Z" fill="#fff" opacity=".9"/>
   </svg>`,
-  panettone:`<svg viewBox="0 0 80 80" style="width:100%;height:100%;position:relative;z-index:1">
+      panettone: `<svg viewBox="0 0 80 80" style="width:100%;height:100%;position:relative;z-index:1">
     <ellipse cx="40" cy="72" rx="26" ry="3.5" fill="#7a3d00" opacity=".25"/>
     <path d="M16 70 L20 50 L60 50 L64 70 Z" fill="#c9302a" stroke="#5a0e0a" stroke-width="2"/>
     <path d="M22 52 L26 68 M30 51 L32 69 M40 50 L40 70 M48 51 L46 69 M58 52 L54 68" stroke="#fff" stroke-width="1.2" opacity=".5"/>
@@ -741,7 +1244,7 @@ const SPRITES = {
     <circle cx="48" cy="34" r="0.8" fill="#fff" opacity=".9"/>
     <circle cx="58" cy="32" r="1" fill="#fff" opacity=".9"/>
   </svg>`,
-  tiramisu:`<svg viewBox="0 0 80 80" style="width:100%;height:100%;position:relative;z-index:1">
+      tiramisu: `<svg viewBox="0 0 80 80" style="width:100%;height:100%;position:relative;z-index:1">
     <ellipse cx="40" cy="68" rx="28" ry="3.5" fill="#3a1a0a" opacity=".3"/>
     <ellipse cx="40" cy="64" rx="32" ry="6" fill="#fff8e8" stroke="#7a3d00" stroke-width="1.5"/>
     <path d="M14 60 L14 32 L66 32 L66 60 Z" fill="#c9924a" stroke="#3a1a0a" stroke-width="2"/>
@@ -754,7 +1257,7 @@ const SPRITES = {
     <circle cx="40" cy="30" r=".7" fill="#1a0a04"/>
     <ellipse cx="40" cy="22" rx="22" ry="2.5" fill="#2a1408" opacity=".5"/>
   </svg>`,
-  onion:`<svg viewBox="0 0 80 80" style="width:100%;height:100%;position:relative;z-index:1">
+      onion: `<svg viewBox="0 0 80 80" style="width:100%;height:100%;position:relative;z-index:1">
     <g stroke="#7a4a00" stroke-width="1.5" fill="#ffd24c">
       <path d="M10 36 Q4 30 6 22 Q12 22 16 28 Q18 34 14 38 Z"/>
       <path d="M70 36 Q76 30 74 22 Q68 22 64 28 Q62 34 66 38 Z"/>
@@ -770,7 +1273,7 @@ const SPRITES = {
     <circle cx="40" cy="6" r="3" fill="#ffd24c" stroke="#7a4a00" stroke-width="1.5"/>
     <path d="M37 8 L40 4 L43 8" stroke="#7a4a00" stroke-width="1.5" fill="#fff7c2"/>
   </svg>`,
-  rice:`<svg viewBox="0 0 80 80" style="width:100%;height:100%">
+      rice: `<svg viewBox="0 0 80 80" style="width:100%;height:100%">
     <ellipse cx="40" cy="62" rx="30" ry="3" fill="#444" opacity=".2"/>
     <path d="M10 44 Q10 60 40 62 Q70 60 70 44 Z" fill="#c9c9c2" stroke="#5a5a52" stroke-width="2"/>
     <path d="M12 44 Q18 30 40 28 Q62 30 68 44 Z" fill="#ededdd" stroke="#5a5a52" stroke-width="1.5"/>
@@ -780,7 +1283,7 @@ const SPRITES = {
     <ellipse cx="34" cy="42" rx="3" ry="1.4" fill="#fff" stroke="#7a7a72" stroke-width=".6" transform="rotate(-20 34 42)"/>
     <ellipse cx="46" cy="42" rx="3" ry="1.4" fill="#fff" stroke="#7a7a72" stroke-width=".6" transform="rotate(20 46 42)"/>
   </svg>`,
-  broth:`<svg viewBox="0 0 80 80" style="width:100%;height:100%">
+      broth: `<svg viewBox="0 0 80 80" style="width:100%;height:100%">
     <ellipse cx="40" cy="66" rx="30" ry="3" fill="#444" opacity=".2"/>
     <path d="M28 14 Q26 22 30 28" stroke="#a8a89a" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
     <path d="M40 8 Q44 18 38 26" stroke="#a8a89a" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
@@ -790,7 +1293,7 @@ const SPRITES = {
     <ellipse cx="34" cy="38" rx="2" ry=".8" fill="#e8d8a8" opacity=".8"/>
     <ellipse cx="48" cy="38" rx="1.4" ry=".6" fill="#e8d8a8" opacity=".8"/>
   </svg>`,
-  pasta:`<svg viewBox="0 0 80 80" style="width:100%;height:100%">
+      pasta: `<svg viewBox="0 0 80 80" style="width:100%;height:100%">
     <ellipse cx="40" cy="64" rx="30" ry="3" fill="#444" opacity=".2"/>
     <ellipse cx="40" cy="56" rx="34" ry="10" fill="#cac4b4" stroke="#5a5448" stroke-width="2"/>
     <ellipse cx="40" cy="54" rx="28" ry="7" fill="#dcd6c4" stroke="#5a5448" stroke-width="1"/>
@@ -800,7 +1303,7 @@ const SPRITES = {
       <path d="M26 58 Q34 54 42 58 Q50 62 56 58"/>
     </g>
   </svg>`,
-  broccoli:`<svg viewBox="0 0 80 80" style="width:100%;height:100%">
+      broccoli: `<svg viewBox="0 0 80 80" style="width:100%;height:100%">
     <ellipse cx="40" cy="68" rx="22" ry="3" fill="#444" opacity=".2"/>
     <path d="M34 50 L34 64 L46 64 L46 50 Z" fill="#b8c4a8" stroke="#3a4a32" stroke-width="2"/>
     <g fill="#7a8a6a" stroke="#2a3a22" stroke-width="1.8" stroke-linejoin="round">
@@ -817,531 +1320,532 @@ const SPRITES = {
       <circle cx="28" cy="46" r="1.4"/><circle cx="42" cy="46" r="1.4"/><circle cx="54" cy="46" r="1.4"/>
     </g>
   </svg>`,
-};
+    };
 
-const SINFUL = [
-  {key:'parmigiano',  name:'PARMIGIANO',  kcal:450,  fill:18},
-  {key:'panettone',   name:'PANETTONE',   kcal:800,  fill:24},
-  {key:'tiramisu',    name:'TIRAMISÙ',    kcal:650,  fill:22},
-  {key:'onion',       name:'CIPOLLA D\'ORO', kcal:1200, fill:32},
-];
-const HEALTHY = [
-  {key:'rice',     name:'RISO IN BIANCO', heal:10},
-  {key:'broth',    name:'BRODINO',        heal:14},
-  {key:'pasta',    name:'PASTA NUDA',     heal:8},
-  {key:'broccoli', name:'BROCCOLI',       heal:18},
-];
+    const SINFUL = [
+      { key: 'parmigiano', name: 'PARMIGIANO', kcal: 450, fill: 18 },
+      { key: 'panettone', name: 'PANETTONE', kcal: 800, fill: 24 },
+      { key: 'tiramisu', name: 'TIRAMISÙ', kcal: 650, fill: 22 },
+      { key: 'onion', name: 'CIPOLLA D\'ORO', kcal: 1200, fill: 32 },
+    ];
+    const HEALTHY = [
+      { key: 'rice', name: 'RISO IN BIANCO', heal: 10 },
+      { key: 'broth', name: 'BRODINO', heal: 14 },
+      { key: 'pasta', name: 'PASTA NUDA', heal: 8 },
+      { key: 'broccoli', name: 'BROCCOLI', heal: 18 },
+    ];
 
-//──────────────────────────────────────────────────────────
-// Game state
-//──────────────────────────────────────────────────────────
-const game = {
-  state:'title',          // 'title' | 'playing' | 'over'
-  score:0,
-  indigestion:0,
-  combo:0,
-  comboTimer:0,
-  foods:[],
-  spawnTimer:0,
-  spawnInterval:0.85,
-  doloresTimer:20,
-  doloresActive:false,
-  doloresShownAt:0,
-  doloresCount:0,
-  pettoActive:false,
-  pettoEndAt:0,
-  pettoCdEndAt:0,
-  pettoLastTap:0,
-  startedAt:0,
-  sins:0,
-  virtues:0,
-  turi:{x:0.5,y:0,w:130,h:170},     // x,y in normalized 0..1 of game container
-  width:0,height:0,
-  best:Number(localStorage.getItem('turi-best')||0),
-};
+    //──────────────────────────────────────────────────────────
+    // Game state
+    //──────────────────────────────────────────────────────────
+    const game = {
+      state: 'title',          // 'title' | 'playing' | 'over'
+      score: 0,
+      indigestion: 0,
+      combo: 0,
+      comboTimer: 0,
+      foods: [],
+      spawnTimer: 0,
+      spawnInterval: 0.85,
+      doloresTimer: 20,
+      doloresActive: false,
+      doloresShownAt: 0,
+      doloresCount: 0,
+      pettoActive: false,
+      pettoEndAt: 0,
+      pettoCdEndAt: 0,
+      pettoLastTap: 0,
+      startedAt: 0,
+      sins: 0,
+      virtues: 0,
+      turi: { x: 0.5, y: 0, w: 130, h: 170 },     // x,y in normalized 0..1 of game container
+      width: 0, height: 0,
+      best: Number(localStorage.getItem('turi-best') || 0),
+    };
 
-const $game     = document.getElementById('game');
-const $playfield= document.getElementById('playfield');
-const $turi     = document.getElementById('turi');
-const $turiImg  = document.getElementById('turi-img');
-const $thermo   = document.getElementById('thermo');
-const $thermoFill = document.getElementById('thermo-fill');
-const $scoreNum = document.getElementById('score-num');
-const $combo    = document.getElementById('combo-tag');
-const $round    = document.getElementById('round-tag');
-const $petto    = document.getElementById('petto-btn');
-const $pettoCd  = document.getElementById('petto-cd');
-const $alert    = document.getElementById('alert-bar');
-const $dolores  = document.getElementById('dolores');
-const $titleBtn = document.getElementById('start-btn');
-const $titleRec = document.getElementById('title-record');
-const $restart  = document.getElementById('restart-btn');
-const $screenGO = document.getElementById('screen-gameover');
-const $confetti = document.getElementById('confetti-svg');
+    const $game = document.getElementById('game');
+    const $playfield = document.getElementById('playfield');
+    const $turi = document.getElementById('turi');
+    const $turiImg = document.getElementById('turi-img');
+    const $thermo = document.getElementById('thermo');
+    const $thermoFill = document.getElementById('thermo-fill');
+    const $scoreNum = document.getElementById('score-num');
+    const $combo = document.getElementById('combo-tag');
+    const $round = document.getElementById('round-tag');
+    const $petto = document.getElementById('petto-btn');
+    const $pettoCd = document.getElementById('petto-cd');
+    const $alert = document.getElementById('alert-bar');
+    const $dolores = document.getElementById('dolores');
+    const $titleBtn = document.getElementById('start-btn');
+    const $titleRec = document.getElementById('title-record');
+    const $restart = document.getElementById('restart-btn');
+    const $screenGO = document.getElementById('screen-gameover');
+    const $confetti = document.getElementById('confetti-svg');
 
-function fmtKcal(n){
-  return String(Math.floor(n)).padStart(5,'0').replace(/(\d{1,3})(?=(\d{3})+$)/g,'$1.');
-}
+    function fmtKcal(n) {
+      return String(Math.floor(n)).padStart(5, '0').replace(/(\d{1,3})(?=(\d{3})+$)/g, '$1.');
+    }
 
-// ── Haptics ──
-// iOS Safari has no vibration API. Android Chrome requires user activation
-// and may block calls from inside rAF if the gesture has expired (~5s).
-// `hapticPrime` runs from a real user-tap to warm up the API; `haptic`
-// is the per-event call (best-effort; silent if unsupported).
-const hasVibrate = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
-let hapticPrimed = false;
-function hapticPrime(){
-  if(!hasVibrate || hapticPrimed) return;
-  try { navigator.vibrate(1); hapticPrimed = true; } catch(_){}
-}
-function haptic(pattern){
-  if(!hasVibrate) return;
-  try { navigator.vibrate(pattern); } catch(_){}
-}
+    // ── Haptics ──
+    // iOS Safari has no vibration API. Android Chrome requires user activation
+    // and may block calls from inside rAF if the gesture has expired (~5s).
+    // `hapticPrime` runs from a real user-tap to warm up the API; `haptic`
+    // is the per-event call (best-effort; silent if unsupported).
+    const hasVibrate = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+    let hapticPrimed = false;
+    function hapticPrime() {
+      if (!hasVibrate || hapticPrimed) return;
+      try { navigator.vibrate(1); hapticPrimed = true; } catch (_) { }
+    }
+    function haptic(pattern) {
+      if (!hasVibrate) return;
+      try { navigator.vibrate(pattern); } catch (_) { }
+    }
 
-// ── Background music ──
-// Plays once on the first user gesture, loops forever, and is *not*
-// restarted when a new game begins — it just keeps going.
-const $bgm  = document.getElementById('bgm');
-const $mute = document.getElementById('mute-btn');
-let bgmStarted = false;
-$bgm.volume = 0.55;
-function startMusic(){
-  if(bgmStarted || $bgm.muted) return;
-  const p = $bgm.play();
-  if(p && typeof p.then === 'function'){
-    p.then(()=>{ bgmStarted = true; }).catch(()=>{ /* will retry on next gesture */ });
-  } else {
-    bgmStarted = true;
-  }
-}
-$mute.addEventListener('click', e=>{
-  e.stopPropagation();
-  $bgm.muted = !$bgm.muted;
-  $mute.classList.toggle('muted', $bgm.muted);
-  if(!$bgm.muted) startMusic();
-});
-
-//──────────────────────────────────────────────────────────
-// Title decoration: confetti
-//──────────────────────────────────────────────────────────
-function renderConfetti(){
-  const colors=['#ffd24c','#ff2d4a','#fff','#6dc97a','#5aa8ff'];
-  let html='';
-  for(let i=0;i<30;i++){
-    const x=Math.random()*100,y=Math.random()*100;
-    const r=2+Math.random()*3;
-    const c=colors[i%colors.length];
-    const rot=Math.random()*360;
-    html+=`<rect x="${x}" y="${y}" width="${r}" height="${r*0.4}" fill="${c}" transform="rotate(${rot} ${x} ${y})"/>`;
-  }
-  $confetti.innerHTML=html;
-}
-renderConfetti();
-$titleRec.textContent = `RECORD: ${fmtKcal(game.best)} KCAL`;
-
-//──────────────────────────────────────────────────────────
-// Sizing
-//──────────────────────────────────────────────────────────
-function measure(){
-  const r=$game.getBoundingClientRect();
-  game.width=r.width;
-  game.height=r.height;
-  const tr=$turi.getBoundingClientRect();
-  if(tr.width)  game.turi.w = tr.width;
-  if(tr.height) game.turi.h = tr.height;
-  // bottom offset of Turi from the bottom of the game container
-  const cs = getComputedStyle($turi);
-  game.turi.bottom = parseFloat(cs.bottom) || 80;
-}
-window.addEventListener('resize',measure,{passive:true});
-measure();
-
-//──────────────────────────────────────────────────────────
-// Touch / pointer controls — Turi follows finger horizontally
-//──────────────────────────────────────────────────────────
-function pointerToGame(e){
-  const r=$game.getBoundingClientRect();
-  const t=e.touches?e.touches[0]:e;
-  return { x:(t.clientX-r.left)/r.width, y:(t.clientY-r.top)/r.height };
-}
-function setTuriX(nx){
-  game.turi.x=Math.max(0.08,Math.min(0.92,nx));
-}
-// Ignore events whose target is the Petto button (or anything inside it)
-// so that pressing the FAB doesn't drag Turi.
-function isUITarget(e){
-  const t = e.target;
-  return !!t && (t===$petto || $petto.contains(t));
-}
-function onPointer(e){
-  if(game.state!=='playing') return;
-  if(isUITarget(e)) return;
-  if(e.cancelable) e.preventDefault();
-  hapticPrime();              // first real user gesture warms up the API
-  startMusic();               // and (re)tries music if browser blocked autoplay
-  const p=pointerToGame(e);
-  setTuriX(p.x);
-}
-$game.addEventListener('touchstart',onPointer,{passive:false});
-$game.addEventListener('touchmove', onPointer,{passive:false});
-$game.addEventListener('mousedown', e=>{ if(isUITarget(e)) return; game._mouseDown=true; onPointer(e); });
-$game.addEventListener('mousemove', e=>{ if(game._mouseDown && !isUITarget(e)) onPointer(e); });
-window.addEventListener('mouseup',  ()=>{ game._mouseDown=false; });
-
-// Petto Digitale: button taps must not bubble into the game's pointer handlers.
-const stopAll = e => { e.stopPropagation(); };
-['touchstart','touchmove','touchend','mousedown','mouseup','click','dblclick']
-  .forEach(ev => $petto.addEventListener(ev, stopAll));
-$petto.addEventListener('touchstart',e=>{ e.preventDefault(); hapticPrime(); triggerPetto(); },{passive:false});
-$petto.addEventListener('click',     e=>{ hapticPrime(); triggerPetto(); });
-
-// Double-tap anywhere on the playfield (but not on the FAB) also fires Petto.
-$game.addEventListener('touchend',e=>{
-  if(game.state!=='playing') return;
-  if(isUITarget(e)) return;
-  const now=performance.now();
-  if(now-game.pettoLastTap<320) triggerPetto();
-  game.pettoLastTap=now;
-});
-$game.addEventListener('dblclick',e=>{ if(game.state==='playing' && !isUITarget(e)) triggerPetto(); });
-
-//──────────────────────────────────────────────────────────
-// Spawning food
-//──────────────────────────────────────────────────────────
-function spawnFood(){
-  // Sinful is more common but healthy still drops regularly
-  const isSinful = Math.random()<0.62;
-  const def = isSinful ? SINFUL[Math.floor(Math.random()*SINFUL.length)]
-                       : HEALTHY[Math.floor(Math.random()*HEALTHY.length)];
-  const node=document.createElement('div');
-  node.className='food '+(isSinful?'sinful':'healthy');
-  // Build inner: optional halo + sprite svg, wrapped so the pulse
-  // animation doesn't fight the JS-driven transform on .food.
-  node.innerHTML = `<div class="inner">${(isSinful?SVG_HALO:'')}${SPRITES[def.key]}</div>`;
-  $playfield.appendChild(node);
-  const size = 56+Math.random()*22;
-  node.style.width=size+'px';
-  node.style.height=size+'px';
-  const food={
-    el:node,
-    sinful:isSinful,
-    def,
-    x:0.1+Math.random()*0.8,
-    y:-0.1,
-    vx:(Math.random()-0.5)*0.06,
-    vy:0.18 + Math.random()*0.18 + Math.min(0.18, (game.startedAt?(performance.now()-game.startedAt)/60000:0)*0.18),
-    rot:(Math.random()-0.5)*40,
-    rotV:(Math.random()-0.5)*30,
-    size,
-    born:performance.now(),
-    dead:false,
-  };
-  game.foods.push(food);
-}
-
-function clearFoods(){
-  game.foods.forEach(f=>f.el.remove());
-  game.foods.length=0;
-}
-
-//──────────────────────────────────────────────────────────
-// Floating popups
-//──────────────────────────────────────────────────────────
-function popup(text, x, y, cls='good'){
-  const el=document.createElement('div');
-  el.className='popup '+cls;
-  el.textContent=text;
-  el.style.left=(x*game.width)+'px';
-  el.style.top=(y*game.height)+'px';
-  $playfield.appendChild(el);
-  setTimeout(()=>el.remove(),900);
-}
-
-//──────────────────────────────────────────────────────────
-// Petto Digitale — shockwave
-//──────────────────────────────────────────────────────────
-function triggerPetto(){
-  const now=performance.now();
-  if(game.pettoActive || now<game.pettoCdEndAt) return;
-  game.pettoActive=true;
-  game.pettoEndAt = now + 3000;
-  game.pettoCdEndAt = now + 8000;       // total cooldown after activation
-  document.body.classList.add('petto-on');
-  $petto.classList.add('cooling');
-
-  // Shockwave visual at Turi position
-  const sw=document.createElement('div');
-  sw.className='shockwave';
-  const r=$game.getBoundingClientRect();
-  sw.style.left = (game.turi.x*r.width)+'px';
-  sw.style.top  = (r.height - (game.turi.bottom||80) - game.turi.h*0.55) +'px';
-  $playfield.appendChild(sw);
-  setTimeout(()=>sw.remove(),900);
-
-  haptic([30,30,30,30,30]);
-}
-
-function endPetto(){
-  game.pettoActive=false;
-  document.body.classList.remove('petto-on');
-}
-
-//──────────────────────────────────────────────────────────
-// Dolores stealth mode
-//──────────────────────────────────────────────────────────
-function startDolores(){
-  game.doloresActive=true;
-  game.doloresShownAt=performance.now();
-  game.doloresCount++;
-  document.body.classList.add('dolores-on');
-  $dolores.classList.add('show');
-  $alert.classList.add('show');
-}
-function stopDolores(){
-  game.doloresActive=false;
-  document.body.classList.remove('dolores-on');
-  $dolores.classList.remove('show');
-  $alert.classList.remove('show');
-  game.doloresTimer = 18 + Math.random()*6;  // randomize next interval a bit
-}
-
-//──────────────────────────────────────────────────────────
-// Catch + collisions
-//──────────────────────────────────────────────────────────
-function catchBox(){
-  // Catch zone around Turi's mouth (upper area of sprite)
-  const w=game.width, h=game.height;
-  const tx=game.turi.x*w;
-  const ty=h - (game.turi.bottom||80) - game.turi.h*0.55;
-  const rx=game.turi.w*0.32;
-  const ry=game.turi.h*0.30;
-  return {tx,ty,rx,ry};
-}
-function caughtBy(food, box){
-  const fx=food.x*game.width, fy=food.y*game.height;
-  return Math.abs(fx-box.tx) < (box.rx + food.size*0.35) &&
-         Math.abs(fy-box.ty) < (box.ry + food.size*0.35);
-}
-
-function comboBump(){
-  game.combo++;
-  game.comboTimer = 1.6;
-  if(game.combo>=2){
-    $combo.textContent='×'+game.combo+' COMBO!';
-    $combo.classList.remove('show');
-    void $combo.offsetWidth;
-    $combo.classList.add('show');
-  }
-}
-function comboReset(){
-  game.combo=0;
-  $combo.classList.remove('show');
-}
-
-function eatSinful(food){
-  game.sins++;
-  comboBump();
-  const mult = Math.max(1, game.combo);
-  const kcal = food.def.kcal * mult;
-  game.score += kcal;
-  // 5x indigestion penalty during Dolores
-  const fillBase = food.def.fill;
-  const fill = game.doloresActive ? fillBase*5 : fillBase;
-  game.indigestion = Math.min(100, game.indigestion + fill);
-  popup(`+${kcal} KCAL`, food.x, food.y, game.combo>=3?'huge':'good');
-  haptic(80);
-  if(game.doloresActive){
-    popup('×5!', food.x, food.y-0.04, 'huge');
-  }
-}
-function eatHealthy(food){
-  game.virtues++;
-  comboReset();
-  game.indigestion = Math.max(0, game.indigestion - food.def.heal);
-  popup(`-${food.def.heal}`, food.x, food.y, 'bad');
-}
-
-//──────────────────────────────────────────────────────────
-// Game loop
-//──────────────────────────────────────────────────────────
-let last=performance.now();
-function loop(now){
-  const dt=Math.min(0.05, (now-last)/1000);
-  last=now;
-  if(game.state==='playing') tick(dt, now);
-  requestAnimationFrame(loop);
-}
-
-function tick(dt, now){
-  measure();
-
-  // Spawning — slower if dolores is on (stealth) but healthy biased
-  game.spawnTimer -= dt;
-  if(game.spawnTimer<=0){
-    spawnFood();
-    const elapsed = (now - game.startedAt)/1000;
-    game.spawnInterval = Math.max(0.35, 0.85 - elapsed*0.008);
-    game.spawnTimer = game.spawnInterval * (0.7 + Math.random()*0.6);
-  }
-
-  // Dolores timer
-  if(!game.doloresActive){
-    game.doloresTimer -= dt;
-    if(game.doloresTimer<=0) startDolores();
-  } else {
-    if(now - game.doloresShownAt > 4500) stopDolores();
-  }
-
-  // Petto end
-  if(game.pettoActive && now>=game.pettoEndAt) endPetto();
-  // Petto cooldown UI
-  if(now<game.pettoCdEndAt){
-    const remain = Math.max(0,(game.pettoCdEndAt-now)/1000);
-    $pettoCd.textContent = remain.toFixed(0);
-  } else {
-    $petto.classList.remove('cooling');
-  }
-
-  // Combo timer
-  if(game.combo>0){
-    game.comboTimer -= dt;
-    if(game.comboTimer<=0) comboReset();
-  }
-
-  // Foods physics
-  const box = catchBox();
-  const tx = game.turi.x;
-  const ty = (game.height - (game.turi.bottom||80) - game.turi.h*0.55)/game.height;
-
-  for(let i=game.foods.length-1;i>=0;i--){
-    const f=game.foods[i];
-
-    // Petto vector field
-    if(game.pettoActive){
-      const dx = tx - f.x;
-      const dy = ty - f.y;
-      const d  = Math.max(0.05, Math.hypot(dx,dy));
-      const ux = dx/d, uy = dy/d;
-      const force = 0.9 / (d*d + 0.05);   // stronger when closer
-      if(f.sinful){
-        // repel
-        f.vx += -ux * force * dt;
-        f.vy += -uy * force * dt * 0.6;
+    // ── Background music ──
+    // Plays once on the first user gesture, loops forever, and is *not*
+    // restarted when a new game begins — it just keeps going.
+    const $bgm = document.getElementById('bgm');
+    const $mute = document.getElementById('mute-btn');
+    let bgmStarted = false;
+    $bgm.volume = 0.55;
+    function startMusic() {
+      if (bgmStarted || $bgm.muted) return;
+      const p = $bgm.play();
+      if (p && typeof p.then === 'function') {
+        p.then(() => { bgmStarted = true; }).catch(() => { /* will retry on next gesture */ });
       } else {
-        // attract
-        f.vx += ux * force * dt * 1.1;
-        f.vy += uy * force * dt * 1.1;
+        bgmStarted = true;
       }
     }
+    $mute.addEventListener('click', e => {
+      e.stopPropagation();
+      $bgm.muted = !$bgm.muted;
+      $mute.classList.toggle('muted', $bgm.muted);
+      if (!$bgm.muted) startMusic();
+    });
 
-    // gravity
-    f.vy += 0.18 * dt;
-    // damping on horizontal velocity
-    f.vx *= (1 - 0.6*dt);
+    //──────────────────────────────────────────────────────────
+    // Title decoration: confetti
+    //──────────────────────────────────────────────────────────
+    function renderConfetti() {
+      const colors = ['#ffd24c', '#ff2d4a', '#fff', '#6dc97a', '#5aa8ff'];
+      let html = '';
+      for (let i = 0; i < 30; i++) {
+        const x = Math.random() * 100, y = Math.random() * 100;
+        const r = 2 + Math.random() * 3;
+        const c = colors[i % colors.length];
+        const rot = Math.random() * 360;
+        html += `<rect x="${x}" y="${y}" width="${r}" height="${r * 0.4}" fill="${c}" transform="rotate(${rot} ${x} ${y})"/>`;
+      }
+      $confetti.innerHTML = html;
+    }
+    renderConfetti();
+    $titleRec.textContent = `RECORD: ${fmtKcal(game.best)} KCAL`;
 
-    f.x += f.vx * dt * (game.pettoActive ? 1 : 1);
-    f.y += f.vy * dt;
-    f.rot += f.rotV * dt;
+    //──────────────────────────────────────────────────────────
+    // Sizing
+    //──────────────────────────────────────────────────────────
+    function measure() {
+      const r = $game.getBoundingClientRect();
+      game.width = r.width;
+      game.height = r.height;
+      const tr = $turi.getBoundingClientRect();
+      if (tr.width) game.turi.w = tr.width;
+      if (tr.height) game.turi.h = tr.height;
+      // bottom offset of Turi from the bottom of the game container
+      const cs = getComputedStyle($turi);
+      game.turi.bottom = parseFloat(cs.bottom) || 80;
+    }
+    window.addEventListener('resize', measure, { passive: true });
+    measure();
 
-    // wall bounce
-    if(f.x<0.05){f.x=0.05;f.vx=Math.abs(f.vx)*0.6;}
-    if(f.x>0.95){f.x=0.95;f.vx=-Math.abs(f.vx)*0.6;}
+    //──────────────────────────────────────────────────────────
+    // Touch / pointer controls — Turi follows finger horizontally
+    //──────────────────────────────────────────────────────────
+    function pointerToGame(e) {
+      const r = $game.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return { x: (t.clientX - r.left) / r.width, y: (t.clientY - r.top) / r.height };
+    }
+    function setTuriX(nx) {
+      game.turi.x = Math.max(0.08, Math.min(0.92, nx));
+    }
+    // Ignore events whose target is the Petto button (or anything inside it)
+    // so that pressing the FAB doesn't drag Turi.
+    function isUITarget(e) {
+      const t = e.target;
+      return !!t && (t === $petto || $petto.contains(t));
+    }
+    function onPointer(e) {
+      if (game.state !== 'playing') return;
+      if (isUITarget(e)) return;
+      if (e.cancelable) e.preventDefault();
+      hapticPrime();              // first real user gesture warms up the API
+      startMusic();               // and (re)tries music if browser blocked autoplay
+      const p = pointerToGame(e);
+      setTuriX(p.x);
+    }
+    $game.addEventListener('touchstart', onPointer, { passive: false });
+    $game.addEventListener('touchmove', onPointer, { passive: false });
+    $game.addEventListener('mousedown', e => { if (isUITarget(e)) return; game._mouseDown = true; onPointer(e); });
+    $game.addEventListener('mousemove', e => { if (game._mouseDown && !isUITarget(e)) onPointer(e); });
+    window.addEventListener('mouseup', () => { game._mouseDown = false; });
 
-    // position node
-    const px=f.x*game.width, py=f.y*game.height;
-    f.el.style.transform = `translate(${px}px,${py}px) translate(-50%,-50%) rotate(${f.rot}deg)`;
+    // Petto Digitale: button taps must not bubble into the game's pointer handlers.
+    const stopAll = e => { e.stopPropagation(); };
+    ['touchstart', 'touchmove', 'touchend', 'mousedown', 'mouseup', 'click', 'dblclick']
+      .forEach(ev => $petto.addEventListener(ev, stopAll));
+    $petto.addEventListener('touchstart', e => { e.preventDefault(); hapticPrime(); triggerPetto(); }, { passive: false });
+    $petto.addEventListener('click', e => { hapticPrime(); triggerPetto(); });
 
-    // Collision with Turi
-    if(!f.dead && caughtBy(f, box)){
-      f.dead=true;
-      f.el.style.transition='transform .2s, opacity .2s';
-      f.el.style.opacity='0';
-      setTimeout(()=>f.el.remove(),220);
-      game.foods.splice(i,1);
-      if(f.sinful) eatSinful(f); else eatHealthy(f);
-      // mouth glow flash
-      $turi.classList.add('catching');
-      setTimeout(()=>$turi.classList.remove('catching'),140);
-      continue;
+    // Double-tap anywhere on the playfield (but not on the FAB) also fires Petto.
+    $game.addEventListener('touchend', e => {
+      if (game.state !== 'playing') return;
+      if (isUITarget(e)) return;
+      const now = performance.now();
+      if (now - game.pettoLastTap < 320) triggerPetto();
+      game.pettoLastTap = now;
+    });
+    $game.addEventListener('dblclick', e => { if (game.state === 'playing' && !isUITarget(e)) triggerPetto(); });
+
+    //──────────────────────────────────────────────────────────
+    // Spawning food
+    //──────────────────────────────────────────────────────────
+    function spawnFood() {
+      // Sinful is more common but healthy still drops regularly
+      const isSinful = Math.random() < 0.62;
+      const def = isSinful ? SINFUL[Math.floor(Math.random() * SINFUL.length)]
+        : HEALTHY[Math.floor(Math.random() * HEALTHY.length)];
+      const node = document.createElement('div');
+      node.className = 'food ' + (isSinful ? 'sinful' : 'healthy');
+      // Build inner: optional halo + sprite svg, wrapped so the pulse
+      // animation doesn't fight the JS-driven transform on .food.
+      node.innerHTML = `<div class="inner">${(isSinful ? SVG_HALO : '')}${SPRITES[def.key]}</div>`;
+      $playfield.appendChild(node);
+      const size = 56 + Math.random() * 22;
+      node.style.width = size + 'px';
+      node.style.height = size + 'px';
+      const food = {
+        el: node,
+        sinful: isSinful,
+        def,
+        x: 0.1 + Math.random() * 0.8,
+        y: -0.1,
+        vx: (Math.random() - 0.5) * 0.06,
+        vy: 0.18 + Math.random() * 0.18 + Math.min(0.18, (game.startedAt ? (performance.now() - game.startedAt) / 60000 : 0) * 0.18),
+        rot: (Math.random() - 0.5) * 40,
+        rotV: (Math.random() - 0.5) * 30,
+        size,
+        born: performance.now(),
+        dead: false,
+      };
+      game.foods.push(food);
     }
 
-    // off-screen cleanup
-    if(f.y>1.2){
-      f.el.remove();
-      game.foods.splice(i,1);
+    function clearFoods() {
+      game.foods.forEach(f => f.el.remove());
+      game.foods.length = 0;
     }
-  }
 
-  // Update Turi visual position (X only, follows finger)
-  const tpx = game.turi.x*game.width;
-  $turi.style.left = tpx + 'px';
-  $game.style.setProperty('--turi-x', (game.turi.x*100)+'%');
-  $game.style.setProperty('--turi-y', '78%');
+    //──────────────────────────────────────────────────────────
+    // Floating popups
+    //──────────────────────────────────────────────────────────
+    function popup(text, x, y, cls = 'good') {
+      const el = document.createElement('div');
+      el.className = 'popup ' + cls;
+      el.textContent = text;
+      el.style.left = (x * game.width) + 'px';
+      el.style.top = (y * game.height) + 'px';
+      $playfield.appendChild(el);
+      setTimeout(() => el.remove(), 900);
+    }
 
-  // Update HUD
-  $thermoFill.style.height = game.indigestion.toFixed(1)+'%';
-  if(game.indigestion>75) $thermo.classList.add('danger'); else $thermo.classList.remove('danger');
-  $scoreNum.textContent = fmtKcal(game.score);
+    //──────────────────────────────────────────────────────────
+    // Petto Digitale — shockwave
+    //──────────────────────────────────────────────────────────
+    function triggerPetto() {
+      const now = performance.now();
+      if (game.pettoActive || now < game.pettoCdEndAt) return;
+      game.pettoActive = true;
+      game.pettoEndAt = now + 3000;
+      game.pettoCdEndAt = now + 8000;       // total cooldown after activation
+      document.body.classList.add('petto-on');
+      $petto.classList.add('cooling');
 
-  const elapsed=(now-game.startedAt)/1000;
-  const sec = Math.floor(elapsed)%60;
-  const min = Math.floor(elapsed/60);
-  $round.textContent = `⏱ ${min}:${String(sec).padStart(2,'0')}`;
+      // Shockwave visual at Turi position
+      const sw = document.createElement('div');
+      sw.className = 'shockwave';
+      const r = $game.getBoundingClientRect();
+      sw.style.left = (game.turi.x * r.width) + 'px';
+      sw.style.top = (r.height - (game.turi.bottom || 80) - game.turi.h * 0.55) + 'px';
+      $playfield.appendChild(sw);
+      setTimeout(() => sw.remove(), 900);
 
-  // Game over
-  if(game.indigestion>=100) gameOver();
-}
+      haptic([30, 30, 30, 30, 30]);
+    }
 
-//──────────────────────────────────────────────────────────
-// Start / restart / over
-//──────────────────────────────────────────────────────────
-function startGame(){
-  game.state='playing';
-  game.score=0;
-  game.indigestion=0;
-  game.combo=0; game.comboTimer=0;
-  game.spawnTimer=0.5;
-  game.spawnInterval=0.85;
-  game.doloresTimer=20;
-  game.doloresActive=false; game.doloresCount=0;
-  game.pettoActive=false; game.pettoEndAt=0; game.pettoCdEndAt=0;
-  game.startedAt=performance.now();
-  game.sins=0; game.virtues=0;
-  game.turi.x=0.5;
-  document.body.classList.add('playing');
-  document.body.classList.remove('dolores-on','petto-on');
-  $screenGO.classList.remove('show');
-  $petto.classList.remove('cooling');
-  $alert.classList.remove('show');
-  $dolores.classList.remove('show');
-  clearFoods();
-  // reset thermometer width visually
-  $thermoFill.style.height='0%';
-  $scoreNum.textContent=fmtKcal(0);
-  $round.textContent='⏱ 0:00';
-}
+    function endPetto() {
+      game.pettoActive = false;
+      document.body.classList.remove('petto-on');
+    }
 
-function gameOver(){
-  game.state='over';
-  document.body.classList.remove('playing','dolores-on','petto-on');
-  clearFoods();
-  if(game.score>game.best){
-    game.best=game.score;
-    localStorage.setItem('turi-best',String(game.best));
-  }
-  document.getElementById('go-kcal').textContent = fmtKcal(game.score);
-  document.getElementById('go-sins').textContent = game.sins+' ▾';
-  document.getElementById('go-virtues').textContent = game.virtues+' ▾';
-  document.getElementById('go-mamma').textContent = game.doloresCount+'×';
-  $titleRec.textContent = `RECORD: ${fmtKcal(game.best)} KCAL`;
-  $screenGO.classList.add('show');
-}
+    //──────────────────────────────────────────────────────────
+    // Dolores stealth mode
+    //──────────────────────────────────────────────────────────
+    function startDolores() {
+      game.doloresActive = true;
+      game.doloresShownAt = performance.now();
+      game.doloresCount++;
+      document.body.classList.add('dolores-on');
+      $dolores.classList.add('show');
+      $alert.classList.add('show');
+    }
+    function stopDolores() {
+      game.doloresActive = false;
+      document.body.classList.remove('dolores-on');
+      $dolores.classList.remove('show');
+      $alert.classList.remove('show');
+      game.doloresTimer = 18 + Math.random() * 6;  // randomize next interval a bit
+    }
 
-$titleBtn.addEventListener('click',()=>{ hapticPrime(); haptic(20); startMusic(); startGame(); });
-$restart .addEventListener('click',()=>{ hapticPrime(); haptic(20); startMusic(); startGame(); });
+    //──────────────────────────────────────────────────────────
+    // Catch + collisions
+    //──────────────────────────────────────────────────────────
+    function catchBox() {
+      // Catch zone around Turi's mouth (upper area of sprite)
+      const w = game.width, h = game.height;
+      const tx = game.turi.x * w;
+      const ty = h - (game.turi.bottom || 80) - game.turi.h * 0.55;
+      const rx = game.turi.w * 0.32;
+      const ry = game.turi.h * 0.30;
+      return { tx, ty, rx, ry };
+    }
+    function caughtBy(food, box) {
+      const fx = food.x * game.width, fy = food.y * game.height;
+      return Math.abs(fx - box.tx) < (box.rx + food.size * 0.35) &&
+        Math.abs(fy - box.ty) < (box.ry + food.size * 0.35);
+    }
 
-requestAnimationFrame(loop);
-</script>
+    function comboBump() {
+      game.combo++;
+      game.comboTimer = 1.6;
+      if (game.combo >= 2) {
+        $combo.textContent = '×' + game.combo + ' COMBO!';
+        $combo.classList.remove('show');
+        void $combo.offsetWidth;
+        $combo.classList.add('show');
+      }
+    }
+    function comboReset() {
+      game.combo = 0;
+      $combo.classList.remove('show');
+    }
+
+    function eatSinful(food) {
+      game.sins++;
+      comboBump();
+      const mult = Math.max(1, game.combo);
+      const kcal = food.def.kcal * mult;
+      game.score += kcal;
+      // 5x indigestion penalty during Dolores
+      const fillBase = food.def.fill;
+      const fill = game.doloresActive ? fillBase * 5 : fillBase;
+      game.indigestion = Math.min(100, game.indigestion + fill);
+      popup(`+${kcal} KCAL`, food.x, food.y, game.combo >= 3 ? 'huge' : 'good');
+      haptic(80);
+      if (game.doloresActive) {
+        popup('×5!', food.x, food.y - 0.04, 'huge');
+      }
+    }
+    function eatHealthy(food) {
+      game.virtues++;
+      comboReset();
+      game.indigestion = Math.max(0, game.indigestion - food.def.heal);
+      popup(`-${food.def.heal}`, food.x, food.y, 'bad');
+    }
+
+    //──────────────────────────────────────────────────────────
+    // Game loop
+    //──────────────────────────────────────────────────────────
+    let last = performance.now();
+    function loop(now) {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (game.state === 'playing') tick(dt, now);
+      requestAnimationFrame(loop);
+    }
+
+    function tick(dt, now) {
+      measure();
+
+      // Spawning — slower if dolores is on (stealth) but healthy biased
+      game.spawnTimer -= dt;
+      if (game.spawnTimer <= 0) {
+        spawnFood();
+        const elapsed = (now - game.startedAt) / 1000;
+        game.spawnInterval = Math.max(0.35, 0.85 - elapsed * 0.008);
+        game.spawnTimer = game.spawnInterval * (0.7 + Math.random() * 0.6);
+      }
+
+      // Dolores timer
+      if (!game.doloresActive) {
+        game.doloresTimer -= dt;
+        if (game.doloresTimer <= 0) startDolores();
+      } else {
+        if (now - game.doloresShownAt > 4500) stopDolores();
+      }
+
+      // Petto end
+      if (game.pettoActive && now >= game.pettoEndAt) endPetto();
+      // Petto cooldown UI
+      if (now < game.pettoCdEndAt) {
+        const remain = Math.max(0, (game.pettoCdEndAt - now) / 1000);
+        $pettoCd.textContent = remain.toFixed(0);
+      } else {
+        $petto.classList.remove('cooling');
+      }
+
+      // Combo timer
+      if (game.combo > 0) {
+        game.comboTimer -= dt;
+        if (game.comboTimer <= 0) comboReset();
+      }
+
+      // Foods physics
+      const box = catchBox();
+      const tx = game.turi.x;
+      const ty = (game.height - (game.turi.bottom || 80) - game.turi.h * 0.55) / game.height;
+
+      for (let i = game.foods.length - 1; i >= 0; i--) {
+        const f = game.foods[i];
+
+        // Petto vector field
+        if (game.pettoActive) {
+          const dx = tx - f.x;
+          const dy = ty - f.y;
+          const d = Math.max(0.05, Math.hypot(dx, dy));
+          const ux = dx / d, uy = dy / d;
+          const force = 0.9 / (d * d + 0.05);   // stronger when closer
+          if (f.sinful) {
+            // repel
+            f.vx += -ux * force * dt;
+            f.vy += -uy * force * dt * 0.6;
+          } else {
+            // attract
+            f.vx += ux * force * dt * 1.1;
+            f.vy += uy * force * dt * 1.1;
+          }
+        }
+
+        // gravity
+        f.vy += 0.18 * dt;
+        // damping on horizontal velocity
+        f.vx *= (1 - 0.6 * dt);
+
+        f.x += f.vx * dt * (game.pettoActive ? 1 : 1);
+        f.y += f.vy * dt;
+        f.rot += f.rotV * dt;
+
+        // wall bounce
+        if (f.x < 0.05) { f.x = 0.05; f.vx = Math.abs(f.vx) * 0.6; }
+        if (f.x > 0.95) { f.x = 0.95; f.vx = -Math.abs(f.vx) * 0.6; }
+
+        // position node
+        const px = f.x * game.width, py = f.y * game.height;
+        f.el.style.transform = `translate(${px}px,${py}px) translate(-50%,-50%) rotate(${f.rot}deg)`;
+
+        // Collision with Turi
+        if (!f.dead && caughtBy(f, box)) {
+          f.dead = true;
+          f.el.style.transition = 'transform .2s, opacity .2s';
+          f.el.style.opacity = '0';
+          setTimeout(() => f.el.remove(), 220);
+          game.foods.splice(i, 1);
+          if (f.sinful) eatSinful(f); else eatHealthy(f);
+          // mouth glow flash
+          $turi.classList.add('catching');
+          setTimeout(() => $turi.classList.remove('catching'), 140);
+          continue;
+        }
+
+        // off-screen cleanup
+        if (f.y > 1.2) {
+          f.el.remove();
+          game.foods.splice(i, 1);
+        }
+      }
+
+      // Update Turi visual position (X only, follows finger)
+      const tpx = game.turi.x * game.width;
+      $turi.style.left = tpx + 'px';
+      $game.style.setProperty('--turi-x', (game.turi.x * 100) + '%');
+      $game.style.setProperty('--turi-y', '78%');
+
+      // Update HUD
+      $thermoFill.style.height = game.indigestion.toFixed(1) + '%';
+      if (game.indigestion > 75) $thermo.classList.add('danger'); else $thermo.classList.remove('danger');
+      $scoreNum.textContent = fmtKcal(game.score);
+
+      const elapsed = (now - game.startedAt) / 1000;
+      const sec = Math.floor(elapsed) % 60;
+      const min = Math.floor(elapsed / 60);
+      $round.textContent = `⏱ ${min}:${String(sec).padStart(2, '0')}`;
+
+      // Game over
+      if (game.indigestion >= 100) gameOver();
+    }
+
+    //──────────────────────────────────────────────────────────
+    // Start / restart / over
+    //──────────────────────────────────────────────────────────
+    function startGame() {
+      game.state = 'playing';
+      game.score = 0;
+      game.indigestion = 0;
+      game.combo = 0; game.comboTimer = 0;
+      game.spawnTimer = 0.5;
+      game.spawnInterval = 0.85;
+      game.doloresTimer = 20;
+      game.doloresActive = false; game.doloresCount = 0;
+      game.pettoActive = false; game.pettoEndAt = 0; game.pettoCdEndAt = 0;
+      game.startedAt = performance.now();
+      game.sins = 0; game.virtues = 0;
+      game.turi.x = 0.5;
+      document.body.classList.add('playing');
+      document.body.classList.remove('dolores-on', 'petto-on');
+      $screenGO.classList.remove('show');
+      $petto.classList.remove('cooling');
+      $alert.classList.remove('show');
+      $dolores.classList.remove('show');
+      clearFoods();
+      // reset thermometer width visually
+      $thermoFill.style.height = '0%';
+      $scoreNum.textContent = fmtKcal(0);
+      $round.textContent = '⏱ 0:00';
+    }
+
+    function gameOver() {
+      game.state = 'over';
+      document.body.classList.remove('playing', 'dolores-on', 'petto-on');
+      clearFoods();
+      if (game.score > game.best) {
+        game.best = game.score;
+        localStorage.setItem('turi-best', String(game.best));
+      }
+      document.getElementById('go-kcal').textContent = fmtKcal(game.score);
+      document.getElementById('go-sins').textContent = game.sins + ' ▾';
+      document.getElementById('go-virtues').textContent = game.virtues + ' ▾';
+      document.getElementById('go-mamma').textContent = game.doloresCount + '×';
+      $titleRec.textContent = `RECORD: ${fmtKcal(game.best)} KCAL`;
+      $screenGO.classList.add('show');
+    }
+
+    $titleBtn.addEventListener('click', () => { hapticPrime(); haptic(20); startMusic(); startGame(); });
+    $restart.addEventListener('click', () => { hapticPrime(); haptic(20); startMusic(); startGame(); });
+
+    requestAnimationFrame(loop);
+  </script>
 </body>
+
 </html>
